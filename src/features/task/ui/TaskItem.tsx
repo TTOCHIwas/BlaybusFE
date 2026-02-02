@@ -1,6 +1,7 @@
 import { HStack, Checkbox, Text, IconButton, Badge } from '@chakra-ui/react';
 import { Task } from '@/entities/task/types';
 import { SUBJECT_LABELS } from '@/shared/constants/subjects';
+import { CloseIcon } from '@chakra-ui/icons';
 
 interface TaskItemProps {
   task: Task;
@@ -43,14 +44,17 @@ export const TaskItem = ({ task, onToggle, onDelete, onClick }: TaskItemProps) =
         </div>
       </HStack>
 
-      {!task.isFixed && (
-        <IconButton
-          aria-label="Delete task"
-          icon={<span>X</span>}
-          size="sm"
-          variant="ghost"
-          colorScheme="red"
-          onClick={onDelete}
+        {!task.isFixed && ( 
+          <IconButton
+            aria-label="Delete task"
+            icon={<CloseIcon />}
+            size="xs" // 사이즈 조절
+            variant="ghost"
+            colorScheme="red"
+            onClick={(e) => {
+            e.stopPropagation(); // 부모 클릭 이벤트 전파 방지
+            onDelete();
+          }}
         />
       )}
     </HStack>
