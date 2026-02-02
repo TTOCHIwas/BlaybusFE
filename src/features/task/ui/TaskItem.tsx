@@ -1,4 +1,4 @@
-import { HStack, Checkbox, Text, IconButton, Badge } from '@chakra-ui/react';
+import { HStack, Checkbox, Text, IconButton, Badge, Box } from '@chakra-ui/react';
 import { Task } from '@/entities/task/types';
 import { SUBJECT_LABELS } from '@/shared/constants/subjects';
 import { CloseIcon } from '@chakra-ui/icons';
@@ -19,15 +19,21 @@ export const TaskItem = ({ task, onToggle, onDelete, onClick }: TaskItemProps) =
       borderRadius="lg"
       boxShadow="sm"
       justify="space-between"
+      cursor="pointer" 
+      onClick={onClick}
+      _hover={{ boxShadow: 'md' }}
     >
       <HStack spacing={3} flex={1}>
         <Checkbox
           isChecked={task.isCompleted}
-          onChange={onToggle}
+          onChange={(e) => {
+            e.stopPropagation(); 
+            onToggle();
+          }}
           size="lg"
           colorScheme="blue"
         />
-        <div onClick={onClick} style={{ flex: 1, cursor: 'pointer' }}>
+        <Box flex={1}>
           <HStack mb={1}>
             <Badge colorScheme={task.isFixed ? 'purple' : 'gray'} fontSize="0.7rem">
               {SUBJECT_LABELS[task.subject]}
@@ -41,18 +47,18 @@ export const TaskItem = ({ task, onToggle, onDelete, onClick }: TaskItemProps) =
           >
             {task.title}
           </Text>
-        </div>
+        </Box>
       </HStack>
 
         {!task.isFixed && ( 
           <IconButton
             aria-label="Delete task"
             icon={<CloseIcon />}
-            size="xs" // 사이즈 조절
+            size="xs" 
             variant="ghost"
             colorScheme="red"
             onClick={(e) => {
-            e.stopPropagation(); // 부모 클릭 이벤트 전파 방지
+            e.stopPropagation(); 
             onDelete();
           }}
         />
