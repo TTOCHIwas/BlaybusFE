@@ -2,29 +2,30 @@ import { create } from 'zustand';
 import { Task } from '@/entities/task/types';
 import { StudyTimeSlot } from '@/entities/study-time/types';
 import { MOCK_TASKS, MOCK_STUDY_TIME_SLOTS } from '@/features/planner/model/mockPlannerData';
+import { getAdjustedDate } from '@/shared/lib/date';
 
-const TODAY = new Date().toISOString().split('T')[0];
+const TODAY = getAdjustedDate();
 
 interface PlannerState {
   selectedDate: string;
-  tasks: Task[];      
-  taskCache: Task[]; 
+  tasks: Task[];
+  taskCache: Task[];
   studyTimeSlots: StudyTimeSlot[];
-  comment: string;    
+  comment: string;
   
-  // Actions
   setSelectedDate: (date: string) => void;
   toggleTaskComplete: (taskId: string) => void;
   addTask: (task: Task) => void;
   deleteTask: (taskId: string) => void;
   setStudyTimeSlots: (slots: StudyTimeSlot[]) => void;
+  addStudyTimeSlot: (slot: StudyTimeSlot) => void; 
   setComment: (comment: string) => void;
 }
 
 export const usePlannerStore = create<PlannerState>((set, get) => ({
   selectedDate: TODAY,
   taskCache: MOCK_TASKS,
-  tasks: MOCK_TASKS.filter((t) => t.date === TODAY), 
+  tasks: MOCK_TASKS.filter((t) => t.date === TODAY),
   studyTimeSlots: MOCK_STUDY_TIME_SLOTS,
   comment: '',
 
@@ -63,6 +64,11 @@ export const usePlannerStore = create<PlannerState>((set, get) => ({
     })),
 
   setStudyTimeSlots: (slots) => set({ studyTimeSlots: slots }),
+
+  addStudyTimeSlot: (slot) => 
+    set((state) => ({
+      studyTimeSlots: [...state.studyTimeSlots, slot]
+    })),
   
   setComment: (comment) => set({ comment }),
 }));
