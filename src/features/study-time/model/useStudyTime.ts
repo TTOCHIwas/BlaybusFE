@@ -49,7 +49,7 @@ export const useStudyTime = (
     }
 
     setGridState(newGrid);
-    const newSlots = gridStateToSlots(newGrid, menteeId, date);
+    const newSlots = gridStateToSlots(newGrid);
     onUpdate(newSlots);
 
     setIsDragging(false);
