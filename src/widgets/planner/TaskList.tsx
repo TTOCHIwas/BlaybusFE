@@ -6,11 +6,15 @@ import { TaskAddForm } from '@/features/task/ui/TaskAddForm';
 import { useNavigate } from 'react-router-dom';
 import { Task } from '@/entities/task/types';
 import { AddIcon } from '@chakra-ui/icons';
+import { canAddTask, canUseTimer } from '@/shared/lib/date';
 
 export const TaskList = () => {
   const { tasks, selectedDate, updateTaskStatus, deleteTask, addTask } = usePlannerStore();
   const navigate = useNavigate();
   const [isAdding, setIsAdding] = useState(false);
+
+  const isEditable = canAddTask(selectedDate);
+  const isTimerEnabled = canUseTimer(selectedDate);
 
   const handleTaskClick = (taskId: string) => {
     navigate(`/mentee/task/${taskId}`);
@@ -26,7 +30,7 @@ export const TaskList = () => {
       id: `new-${Date.now()}`,
       title: data.title,
       subject: data.subject,
-      taskDate: selectedDate, 
+      taskDate: selectedDate,
       status: 'PENDING',
       isMandatory: false,
       isMentorChecked: false,
@@ -53,25 +57,29 @@ export const TaskList = () => {
             onToggle={() => handleToggle(task)}
             onDelete={() => deleteTask(task.id)}
             onClick={() => handleTaskClick(task.id)}
+            isTimerEnabled={isTimerEnabled}
+            isEditable={isEditable}
           />
         ))
       )}
 
-      {isAdding ? (
-        <Box mt={2}>
-          <TaskAddForm onSubmit={handleAddTask} onCancel={() => setIsAdding(false)} />
-        </Box>
-      ) : (
-        <Button 
-          leftIcon={<AddIcon />} 
-          colorScheme="blue" 
-          variant="outline" 
-          w="full" 
-          onClick={() => setIsAdding(true)}
-          mt={2}
-        >
-          할 일 추가하기
-        </Button>
+      {isEditable && (
+        isAdding ? (
+          <Box mt={2}>
+            <TaskAddForm onSubmit={handleAddTask} onCancel={() => setIsAdding(false)} />
+          </Box>
+        ) : (
+          <Button 
+            leftIcon={<AddIcon />} 
+            colorScheme="blue" 
+            variant="outline" 
+            w="full" 
+            onClick={() => setIsAdding(true)}
+            mt={2}
+          >
+            할 일 추가하기
+          </Button>
+        )
       )}
     </VStack>
   );

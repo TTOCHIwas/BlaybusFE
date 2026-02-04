@@ -9,10 +9,20 @@ interface TaskItemProps {
   onToggle: () => void;
   onDelete: () => void;
   onClick: () => void;
+  isTimerEnabled: boolean;
+  isEditable: boolean;
 }
 
-export const TaskItem = ({ task, onToggle, onDelete, onClick }: TaskItemProps) => {
+export const TaskItem = ({ 
+  task, 
+  onToggle, 
+  onDelete, 
+  onClick,
+  isTimerEnabled,
+  isEditable
+}: TaskItemProps) => {
   const isCompleted = task.status === 'COMPLETED';
+  const canDelete = isEditable && !task.isMandatory;
   
   return (
     <HStack
@@ -53,12 +63,14 @@ export const TaskItem = ({ task, onToggle, onDelete, onClick }: TaskItemProps) =
       </HStack>
 
       <HStack spacing={2} flexShrink={0}>
-        <TaskTimer 
-          taskId={task.id} 
-          isDisabled={isCompleted} 
-        />
+        {isTimerEnabled && (
+          <TaskTimer 
+            taskId={task.id} 
+            isDisabled={isCompleted} 
+          />
+        )}
         
-        {!task.isMandatory && (
+        {canDelete && (
           <IconButton
             aria-label="Delete task"
             icon={<CloseIcon />}
