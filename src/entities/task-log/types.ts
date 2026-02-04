@@ -1,8 +1,8 @@
 export interface TaskLog {
   id: string;
-  startAt: string;      
-  endAt: string;       
-  duration: number;    
+  startAt: string;
+  endAt: string;
+  duration: number;
   taskId: string;
 }
 
