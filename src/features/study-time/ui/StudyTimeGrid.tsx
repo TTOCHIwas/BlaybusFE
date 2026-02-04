@@ -1,25 +1,21 @@
 import { Box, Text, Flex } from '@chakra-ui/react';
-import { StudyTimeSlot } from '@/entities/study-time/types';
+import { usePlannerStore } from '@/shared/stores/plannerStore';
 import { 
   SUBJECT_COLORS, 
   TOTAL_HOURS, 
   SLOTS_PER_HOUR,
   DAY_START_HOUR 
 } from '@/shared/constants/studyTime';
-import { formatMinutes, slotsToGridState, calculateTotalMinutes } from '../model/studyTimeUtils';
+import { logsToGridState, calculateTotalMinutes, formatMinutes } from '../model/studyTimeUtils';
 
-interface Props {
-  slots: StudyTimeSlot[];
-}
-
-export const StudyTimeGrid = ({ slots }: Props) => {
-  const gridState = slotsToGridState(slots);
+export const StudyTimeGrid = () => {
+  const { tasks, taskLogs } = usePlannerStore();
+  
+  const gridState = logsToGridState(taskLogs, tasks);
   const totalMinutes = calculateTotalMinutes(gridState);
 
-  // 04시부터 시작하는 24시간 배열
   const hours = Array.from({ length: TOTAL_HOURS }, (_, i) => {
-    const hour = (DAY_START_HOUR + i) % 24;
-    return hour;
+    return (DAY_START_HOUR + i) % 24;
   });
 
   return (
