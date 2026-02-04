@@ -1,4 +1,4 @@
-import { format, subDays } from 'date-fns';
+import { format, subDays, isBefore, isAfter, startOfDay } from 'date-fns';
 import { DAY_START_HOUR } from '@/shared/constants/studyTime';
 
 export const getAdjustedDate = (): string => {
@@ -20,4 +20,28 @@ export const formatDuration = (seconds: number): string => {
   return [hours, minutes, secs]
     .map((v) => String(v).padStart(2, '0'))
     .join(':');
+};
+
+export const isToday = (dateString: string): boolean => {
+  return dateString === getAdjustedDate();
+};
+
+export const isPastDate = (dateString: string): boolean => {
+  const today = startOfDay(new Date(getAdjustedDate()));
+  const target = startOfDay(new Date(dateString));
+  return isBefore(target, today);
+};
+
+export const isFutureDate = (dateString: string): boolean => {
+  const today = startOfDay(new Date(getAdjustedDate()));
+  const target = startOfDay(new Date(dateString));
+  return isAfter(target, today);
+};
+
+export const canAddTask = (dateString: string): boolean => {
+  return !isPastDate(dateString);
+};
+
+export const canUseTimer = (dateString: string): boolean => {
+  return isToday(dateString);
 };

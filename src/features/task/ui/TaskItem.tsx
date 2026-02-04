@@ -55,7 +55,6 @@ export const TaskItem = ({ task, onToggle, onDelete, onClick }: TaskItemProps) =
       <HStack spacing={2} flexShrink={0}>
         <TaskTimer 
           taskId={task.id} 
-          subject={task.subject}
           isDisabled={isCompleted} 
         />
         
