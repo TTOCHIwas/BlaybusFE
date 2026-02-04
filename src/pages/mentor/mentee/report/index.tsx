@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Box, Heading, Button, useToast, Container, Text } from '@chakra-ui/react';
-import { DateSelector } from './components/DateSelector';
-import { ReportForm } from './components/ReportForm';
+import { DateSelector } from './ui/DateSelector';
+import { ReportForm } from './ui/ReportForm';
 
 interface ReportData {
     id?: string;
