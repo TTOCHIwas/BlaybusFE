@@ -1,16 +1,17 @@
-import { Box, Heading, Text, Tag } from '@chakra-ui/react';
-import { useParams } from 'react-router-dom';
+import { Box, Text } from '@chakra-ui/react';
+import { MenteeProfileSection } from './ui/MenteeProfileSection';
+import { MOCK_MENTEE_PROFILE } from './model/mockData';
 
 const MentorMenteeManagePage = () => {
-  const { menteeId } = useParams();
 
   return (
-    <Box>
-      <Heading size="lg" mb={4}>멘티 상세 관리</Heading>
-      <Text mb={4}>
-        현재 선택된 멘티 ID: <Tag colorScheme="blue">{menteeId}</Tag>
-      </Text>
-      <Text color="gray.600">이곳에서 멘티의 학습 현황을 종합적으로 관리합니다.</Text>
+    <Box maxW="1200px" mx="auto" py={6}>
+      <Text fontSize="2xl" fontWeight="bold" mb={6}>담당 멘티</Text>
+      
+      <MenteeProfileSection profile={MOCK_MENTEE_PROFILE} />
+
+      <Box mt={8}>
+      </Box>
     </Box>
   );
 };
