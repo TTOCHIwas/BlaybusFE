@@ -1,42 +1,57 @@
 import { Task } from '@/entities/task/types';
-import { StudyTimeSlot } from '@/entities/study-time/types';
+import { TaskLog } from '@/entities/task-log/types';
+import { getAdjustedDate } from '@/shared/lib/date';
 
-const TODAY = new Date().toISOString().split('T')[0];
+const TODAY = getAdjustedDate();
 
 export const MOCK_TASKS: Task[] = [
   {
     id: 'task-1',
     title: '비문학 3지문 풀이',
     subject: 'KOREAN',
-    date: TODAY,
-    isFixed: true,
-    isCompleted: false,
+    status: 'PENDING',
+    taskDate: TODAY,
+    isMandatory: true,
+    isMentorChecked: false,
     menteeId: 'mentee-1',
-    createdBy: 'MENTOR',
+    recurringGroupId: null,
+    contentId: null,
+    weaknessId: null,
   },
   {
     id: 'task-2',
     title: '미적분 문제 20번',
     subject: 'MATH',
-    date: TODAY,
-    isFixed: true,
-    isCompleted: true,
+    status: 'COMPLETED',
+    taskDate: TODAY,
+    isMandatory: true,
+    isMentorChecked: false,
     menteeId: 'mentee-1',
-    createdBy: 'MENTOR',
+    recurringGroupId: null,
+    contentId: null,
+    weaknessId: null,
   },
   {
     id: 'task-3',
     title: '영단어 50개 암기',
     subject: 'ENGLISH',
-    date: TODAY,
-    isFixed: false,
-    isCompleted: false,
+    status: 'IN_PROGRESS',
+    taskDate: TODAY,
+    isMandatory: false,
+    isMentorChecked: false,
     menteeId: 'mentee-1',
-    createdBy: 'MENTEE',
+    recurringGroupId: null,
+    contentId: null,
+    weaknessId: null,
   },
 ];
 
-export const MOCK_STUDY_TIME_SLOTS: StudyTimeSlot[] = [
-  { startTime: '09:00', endTime: '10:30', subject: 'KOREAN' , taskId: 'task-1'},
-  { startTime: '14:00', endTime: '16:00', subject: 'MATH' , taskId: 'task-2'},
+export const MOCK_TASK_LOGS: TaskLog[] = [
+  { 
+    id: 'log-1',
+    startAt: `${TODAY}T09:00:00`, 
+    endAt: `${TODAY}T10:30:00`, 
+    duration: 5400,
+    taskId: 'task-1'
+  },
 ];

@@ -9,7 +9,15 @@ export const getAdjustedDate = (): string => {
   return format(now, 'yyyy-MM-dd');
 };
 
-export const getCurrentTimeString = (): string => {
-  const now = new Date();
-  return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+export const getCurrentTimeISO = (): string => {
+  return new Date().toISOString();
+};
+
+export const formatDuration = (seconds: number): string => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  return [hours, minutes, secs]
+    .map((v) => String(v).padStart(2, '0'))
+    .join(':');
 };
