@@ -1,11 +1,17 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { getCurrentTimeString } from '@/shared/lib/date';
+import { getCurrentTimeISO } from '@/shared/lib/date';
 
 interface TaskTimerData {
-  elapsedTime: number;           // 누적 시간 (ms)
-  timerStartedAt: number | null; // 시작 시각 (Timestamp)
-  startTimeOfDay: string | null; // 그리드 반영용 시작 시각 (HH:mm)
+  elapsedTime: number;             
+  timerStartedAt: number | null;    
+  startTimeISO: string | null;      
+}
+
+interface StopTimerResult {
+  startAt: string;
+  endAt: string;
+  duration: number;
 }
 
 interface TimerState {
@@ -13,14 +19,14 @@ interface TimerState {
   taskTimers: Record<string, TaskTimerData>;
   
   startTimer: (taskId: string) => void;
-  stopTimer: (taskId: string) => void;
+  stopTimer: (taskId: string) => StopTimerResult | null;
   getTimerData: (taskId: string) => TaskTimerData;
 }
 
-const DEFAULT_TIMER_DATA: TaskTimerData = {
+const DEFAULT_TIMER: TaskTimerData = {
   elapsedTime: 0,
   timerStartedAt: null,
-  startTimeOfDay: null,
+  startTimeISO: null,
 };
 
 export const useTimerStore = create<TimerState>()(
@@ -30,35 +36,27 @@ export const useTimerStore = create<TimerState>()(
       taskTimers: {},
 
       startTimer: (taskId) => {
-        const { activeTaskId, taskTimers } = get();
-        const now = Date.now();
-        const currentTime = getCurrentTimeString();
+        const { activeTaskId, taskTimers, stopTimer } = get();
         
-        let updatedTimers = { ...taskTimers };
-        
-        //기존 실행 중인 타이머가 있다면 정지 처리
+        // 다른 타이머 실행 중이면 정지
         if (activeTaskId && activeTaskId !== taskId) {
-          const prevTimer = updatedTimers[activeTaskId];
-          if (prevTimer?.timerStartedAt) {
-            updatedTimers[activeTaskId] = {
-              ...prevTimer,
-              elapsedTime: prevTimer.elapsedTime + (now - prevTimer.timerStartedAt),
-              timerStartedAt: null,
-            };
-          }
+          stopTimer(activeTaskId);
         }
         
-        //새 타이머 시작
-        const currentTaskTimer = updatedTimers[taskId] || DEFAULT_TIMER_DATA;
-        updatedTimers[taskId] = {
-          ...currentTaskTimer,
-          timerStartedAt: now,
-          startTimeOfDay: currentTaskTimer.startTimeOfDay || currentTime,
-        };
+        const now = Date.now();
+        const nowISO = getCurrentTimeISO();
+        const current = taskTimers[taskId] || DEFAULT_TIMER;
         
         set({
           activeTaskId: taskId,
-          taskTimers: updatedTimers,
+          taskTimers: {
+            ...taskTimers,
+            [taskId]: {
+              ...current,
+              timerStartedAt: now,
+              startTimeISO: current.startTimeISO || nowISO,
+            },
+          },
         });
       },
 
@@ -66,27 +64,32 @@ export const useTimerStore = create<TimerState>()(
         const { taskTimers, activeTaskId } = get();
         const timer = taskTimers[taskId];
         
-        if (!timer?.timerStartedAt) return;
+        if (!timer?.timerStartedAt || !timer?.startTimeISO) return null;
         
         const now = Date.now();
-        const updatedTimer: TaskTimerData = {
-          ...timer,
-          elapsedTime: timer.elapsedTime + (now - timer.timerStartedAt),
-          timerStartedAt: null,
+        const endISO = getCurrentTimeISO();
+        const sessionElapsed = now - timer.timerStartedAt;
+        const totalElapsed = timer.elapsedTime + sessionElapsed;
+        
+        const result: StopTimerResult = {
+          startAt: timer.startTimeISO,
+          endAt: endISO,
+          duration: Math.floor(totalElapsed / 1000),
         };
         
+        // 타이머 리셋
         set({
           activeTaskId: activeTaskId === taskId ? null : activeTaskId,
           taskTimers: {
             ...taskTimers,
-            [taskId]: updatedTimer,
+            [taskId]: DEFAULT_TIMER,
           },
         });
+        
+        return result;
       },
 
-      getTimerData: (taskId) => {
-        return get().taskTimers[taskId] || DEFAULT_TIMER_DATA;
-      },
+      getTimerData: (taskId) => get().taskTimers[taskId] || DEFAULT_TIMER,
     }),
     {
       name: 'timer-storage',
