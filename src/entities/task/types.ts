@@ -1,12 +1,17 @@
 import { Subject } from '@/shared/constants/subjects';
 
+export type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+
 export interface Task {
   id: string;
-  title: string;
   subject: Subject;
-  date: string;
-  isFixed: boolean;
-  isCompleted: boolean;
+  title: string;
+  status: TaskStatus;
+  taskDate: string;               
+  isMandatory: boolean;         
+  isMentorChecked: boolean;
   menteeId: string;
-  createdBy: 'MENTOR' | 'MENTEE';
+  recurringGroupId: string | null;
+  contentId: string | null;
+  weaknessId: string | null;
 }
