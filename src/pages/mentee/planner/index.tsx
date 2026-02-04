@@ -1,8 +1,10 @@
-import { Box, Container, Divider, VStack } from '@chakra-ui/react';
+import { Box, Container, VStack } from '@chakra-ui/react';
 import { PlannerHeader } from '@/widgets/planner/PlannerHeader';
 import { TaskList } from '@/widgets/planner/TaskList';
 import { StudyTimeChart } from '@/widgets/planner/StudyTimeChart';
-import { LogoutButton } from '@/features/auth';
+import { DailyMemoWidget } from '@/widgets/planner/ui/DailyMemoWidget'; 
+import { MentorFeedbackWidget } from '@/widgets/planner/ui/MentorFeedbackWidget';
+
 
 const MenteePlannerPage = () => {
   return (
@@ -12,13 +14,10 @@ const MenteePlannerPage = () => {
       <Box px={4} py={2}>
         <VStack spacing={6} align="stretch">
           <TaskList />
-          <Divider />
           <StudyTimeChart />
+          <DailyMemoWidget />
+          <MentorFeedbackWidget />
         </VStack>
-        
-        <Box textAlign="center" py={4}>
-          <LogoutButton />
-        </Box>
       </Box>
     </Container>
   );
