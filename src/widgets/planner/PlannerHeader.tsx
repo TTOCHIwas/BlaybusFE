@@ -1,6 +1,7 @@
-import { Flex, Text, Button } from '@chakra-ui/react';
+import { Flex, Text, Button, Box } from '@chakra-ui/react';
 import { useAuthStore } from '@/shared/stores/authStore';
 import { useNavigate } from 'react-router-dom';
+import { CalendarWidget } from './ui/CalendarWidget'; 
 
 export const PlannerHeader = () => {
   const { logout } = useAuthStore();
@@ -12,24 +13,22 @@ export const PlannerHeader = () => {
   };
 
   return (
-    <Flex 
-      bg="white" 
-      p={4} 
-      borderBottom="1px solid" 
-      borderColor="gray.200"
-      align="center"
-      justify="space-between" 
-    >
-      <Text fontSize="lg" fontWeight="bold">일일 플래너</Text>
-      
-      <Button 
-        size="xs" 
-        variant="outline" 
-        colorScheme="gray" 
-        onClick={handleLogout}
+    <Box bg="white">
+      <Flex 
+        px={4} 
+        py={3}
+        bg="white"
+        align="center"
+        justify="space-between" 
+        borderBottom="1px solid" 
+        borderColor="gray.100"
       >
-        로그아웃
-      </Button>
-    </Flex>
+        <Text fontSize="lg" fontWeight="bold" color="gray.800">일일 플래너</Text>
+        <Button size="xs" variant="outline" onClick={handleLogout}>
+          로그아웃
+        </Button>
+      </Flex>
+      <CalendarWidget />
+    </Box>
   );
 };

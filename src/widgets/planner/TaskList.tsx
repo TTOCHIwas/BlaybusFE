@@ -44,7 +44,7 @@ export const TaskList = () => {
   };
 
   return (
-    <VStack spacing={3} align="stretch" pb={20}>
+    <VStack spacing={3} align="stretch">
       {tasks.length === 0 && !isAdding ? (
         <Text textAlign="center" color="gray.500" py={10}>
           등록된 할 일이 없습니다.
