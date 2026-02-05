@@ -33,3 +33,15 @@ export const MOCK_ZOOM_FEEDBACKS: ZoomFeedback[] = [
     inforId: 'info-1' 
   },
 ];
+
+export const getWeeklyReportById = (id: string): WeeklyReport | undefined => {
+  return MOCK_WEEKLY_REPORTS.find(r => r.id === id);
+};
+
+export const getWeeklyReportByStartDate = (startDate: string): WeeklyReport | undefined => {
+  return MOCK_WEEKLY_REPORTS.find(r => r.startDate === startDate);
+};
+
+export const getZoomFeedbackById = (id: string): ZoomFeedback | undefined => {
+  return MOCK_ZOOM_FEEDBACKS.find(f => f.id === id);
+};
