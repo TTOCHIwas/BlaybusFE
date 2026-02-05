@@ -1,21 +1,12 @@
-import { Badge, Box, HStack, Text } from '@chakra-ui/react';
-
+import { Badge, Box, HStack, Stack, Text } from '@chakra-ui/react';
 
 interface TaskDetailHeaderProps {
     subject: string;
-    date: string; // YYYY.MM.DD
+    date: string;
     isMentorChecked: boolean;
     title: string;
+    supplement?: string;
 }
-
-// Subject color map removed as it is now hardcoded or unused.
-// const subjectColorMap: Record<string, string> = {
-//     국어: 'red',
-//     영어: 'purple',
-//     수학: 'blue',
-//     과학: 'green',
-//     사회: 'orange',
-// };
 
 export const TaskDetailHeader = ({
     subject,
@@ -23,20 +14,13 @@ export const TaskDetailHeader = ({
     isMentorChecked,
     title,
     supplement,
-}: TaskDetailHeaderProps & { supplement?: string }) => {
-    // const badgeColor = subjectColorMap[subject] || 'gray'; 
-
-    // The previous edit left it unused. Let's remove it properly.
-
-
+}: TaskDetailHeaderProps) => {
     return (
         <Box mb={12}>
-            {/* Title */}
             <Text fontSize="28px" fontWeight="bold" mb={6} color="#1A1A1A">
                 {title}
             </Text>
 
-            {/* Sub Header / Breadcrumbs */}
             {supplement && (
                 <HStack spacing={6} mb={8} fontSize="16px">
                     <Text color="#666666" fontWeight="medium">보완점</Text>
@@ -44,9 +28,13 @@ export const TaskDetailHeader = ({
                 </HStack>
             )}
 
-            {/* Meta Info Row */}
-            <HStack spacing={10} fontSize="15px" align="center">
-                {/* Subject */}
+
+            <Stack 
+                direction={{ base: 'column', md: 'row' }} 
+                spacing={{ base: 3, md: 10 }} 
+                fontSize="15px" 
+                align={{ base: 'flex-start', md: 'center' }}
+            >
                 <HStack spacing={8}>
                     <Text color="#8e8e8e" fontWeight="medium" minW="30px">과목</Text>
                     <Badge
@@ -64,13 +52,11 @@ export const TaskDetailHeader = ({
                     </Badge>
                 </HStack>
 
-                {/* Date */}
                 <HStack spacing={8}>
                     <Text color="#8e8e8e" fontWeight="medium" minW="30px">날짜</Text>
                     <Text color="#333333" fontWeight="bold">{date}</Text>
                 </HStack>
 
-                {/* Mentor Check */}
                 <HStack spacing={4}>
                     <Text color="#8e8e8e" fontWeight="medium" minW="60px">멘토 확인</Text>
                     {isMentorChecked ? (
@@ -84,7 +70,7 @@ export const TaskDetailHeader = ({
                         <Text color="gray.400">미확인</Text>
                     )}
                 </HStack>
-            </HStack>
+            </Stack>
         </Box>
     );
 };

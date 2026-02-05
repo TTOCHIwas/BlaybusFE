@@ -1,7 +1,11 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import { ChevronDownIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MenteeNavItem } from './types';
+
+export interface MenteeNavItem {
+  id: string;
+  name: string;
+}
 
 interface Props {
   mentee: MenteeNavItem;

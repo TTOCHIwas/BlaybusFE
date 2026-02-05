@@ -10,7 +10,7 @@ interface Props {
 export const SidebarMenuItem = ({ label, path, icon }: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const isActive = location.pathname === path;
+  const isActive = location.pathname.startsWith(path);
 
   return (
     <Flex
