@@ -1,2 +1,3 @@
-export { default } from './MentorTaskDetailPage';
-export * from './MentorTaskDetailPage';
+import MentorTaskDetailPage from './MentorTaskDetailPage';
+
+export default MentorTaskDetailPage;
