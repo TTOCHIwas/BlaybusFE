@@ -67,15 +67,17 @@ export const router = createBrowserRouter([
       { path: 'mentee/:menteeId', element: <MentorMenteeManagePage /> },
       { path: 'mentee/:menteeId/calendar', element: <MentorMenteeCalendarPage /> },
       { path: 'mentee/:menteeId/feedback', element: <MentorMenteeFeedbackPage /> },
-      { path: 'mentee/:menteeId/feedback/zoom', element: <MentorZoomFeedbackPage /> },
       { path: 'mentee/:menteeId/task/:taskId', element: <MentorTaskDetailPage /> },
-      { path: 'mentee/:menteeId/report', element: <MentorReportPage /> },
-      
-      { path: 'mentee/:menteeId/report/new', element: <MentorReportPage /> },      
-      { path: 'mentee/:menteeId/report/:reportId', element: <MentorReportPage /> }, 
 
-      { path: 'mentee/:menteeId/zoom/new', element: <MentorZoomFeedbackPage /> },  
-      { path: 'mentee/:menteeId/zoom/:zoomId', element: <MentorZoomFeedbackPage /> }, 
+      // 주간 리포트
+      { path: 'mentee/:menteeId/report', element: <MentorReportPage /> },
+      { path: 'mentee/:menteeId/report/new', element: <MentorReportPage /> },
+      { path: 'mentee/:menteeId/report/:reportId', element: <MentorReportPage /> },
+
+      // 줌 피드백
+      { path: 'mentee/:menteeId/zoom', element: <MentorZoomFeedbackPage /> },
+      { path: 'mentee/:menteeId/zoom/new', element: <MentorZoomFeedbackPage /> },
+      { path: 'mentee/:menteeId/zoom/:zoomId', element: <MentorZoomFeedbackPage /> },
     ],
   },
 

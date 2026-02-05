@@ -1,92 +1,158 @@
 import { useEffect, useState } from 'react';
-import { Box, Heading, Button, useToast, Container, Text, Flex } from '@chakra-ui/react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { 
+  Box, Heading, Button, useToast, Container, Text, Flex, VStack 
+} from '@chakra-ui/react';
 import { FeedbackMemo } from './ui/FeedbackMemo';
 import { SubjectFeedback } from './ui/SubjectFeedback';
 import { OperationalFeedback } from './ui/OperationalFeedback';
-import { ZoomFeedbackData } from './mockZoomFeedbackData';
+import { ZoomFeedbackData, MOCK_ZOOM_FEEDBACK_DATA } from './mockZoomFeedbackData';
+import { getZoomFeedbackById } from '@/features/report/model/mockReportData';
 
 const ZoomFeedbackPage = () => {
-    const toast = useToast();
-    const [loading, setLoading] = useState(false);
-    const [data, setData] = useState<ZoomFeedbackData>({
-        memo: '',
-        subjects: { korean: '', english: '', math: '' },
-        operation: '',
-    });
+  const { menteeId, zoomId } = useParams();
+  const navigate = useNavigate();
+  const toast = useToast();
 
-    // Mock Fetch
-    useEffect(() => {
-        // Simulate fetching data
-        // In a real app, this would use a useEffect with a dependency on the date or ID
-        // For now, we just load mock data to simulate "Edit Mode"
-        // To simulate "Create Mode", simply comment out the set call inside
-        const loadData = async () => {
-            setLoading(true);
-            setTimeout(() => {
-                // Uncomment to simulate existing data
-                // setData(MOCK_ZOOM_FEEDBACK_DATA);
-                setLoading(false);
-            }, 500);
-        };
-        loadData();
-    }, []);
+  const isNewMode = !zoomId || zoomId === 'new';
 
-    const handleSave = () => {
-        setLoading(true);
-        setTimeout(() => {
-            console.log('Saved Data:', data);
-            toast({
-                title: "저장되었습니다.",
-                status: "success",
-                duration: 2000,
-                isClosable: true,
-            });
-            setLoading(false);
-        }, 800);
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<ZoomFeedbackData>({
+    memo: '',
+    subjects: { korean: '', english: '', math: '' },
+    operation: '',
+  });
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        if (!isNewMode && zoomId) {
+          const feedback = getZoomFeedbackById(zoomId);
+          if (feedback) {
+            setData(MOCK_ZOOM_FEEDBACK_DATA);
+          }
+        }
+      } finally {
+        setLoading(false);
+      }
     };
+    loadData();
+  }, [zoomId, isNewMode]);
 
-    const handleSubjectChange = (subject: 'korean' | 'english' | 'math', value: string) => {
-        setData((prev) => ({
-            ...prev,
-            subjects: { ...prev.subjects, [subject]: value },
-        }));
-    };
+  const handleSave = async () => {
+    if (!data.memo) {
+      toast({
+        title: '피드백 메모를 입력해주세요.',
+        status: 'warning',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
 
-    return (
-        <Container maxW="container.lg" py={10}>
-            <Flex justifyContent="space-between" alignItems="center" mb={12}>
-                <VStack align="start" spacing={1}>
-                    <Text fontSize="sm" color="gray.500">어서오세요, 멘토님!</Text>
-                    <Heading as="h1" size="lg" color="gray.800">
-                        줌 미팅 피드백
-                    </Heading>
-                </VStack>
-            </Flex>
+    setLoading(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      toast({
+        title: '저장되었습니다.',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
+      navigate(`/mentor/mentee/${menteeId}`);
+    } catch {
+      toast({
+        title: '저장에 실패했습니다.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            <Box mb={10}>
-                <FeedbackMemo value={data.memo} onChange={(val) => setData({ ...data, memo: val })} />
-            </Box>
+  const handleCancel = () => {
+    navigate(`/mentor/mentee/${menteeId}`);
+  };
 
-            <Box mb={10}>
-                <SubjectFeedback subjects={data.subjects} onChange={handleSubjectChange} />
-            </Box>
+  const handleSubjectChange = (subject: 'korean' | 'english' | 'math', value: string) => {
+    setData((prev) => ({
+      ...prev,
+      subjects: { ...prev.subjects, [subject]: value },
+    }));
+  };
 
-            <Box mb={24}>
-                <OperationalFeedback value={data.operation} onChange={(val) => setData({ ...data, operation: val })} />
-            </Box>
+  return (
+    <Container maxW="container.lg" py={10}>
+      <Flex justifyContent="space-between" alignItems="center" mb={12}>
+        <VStack align="start" spacing={1}>
+          <Heading as="h1" size="lg" color="gray.800">
+            줌 미팅 피드백
+          </Heading>
+          <Text fontSize="sm" color="gray.500">
+            {isNewMode ? '새 피드백 작성' : '피드백 수정'}
+          </Text>
+        </VStack>
+      </Flex>
 
-            {/* Fixed Bottom Button */}
-            <Box position="fixed" bottom={0} left={0} right={0} p={4} bg="white" borderTop="1px solid" borderColor="gray.200" zIndex={10}>
-                <Container maxW="container.lg" display="flex" justifyContent="flex-end" gap={4}>
-                    <Button variant="outline" size="lg" minW="100px">취소</Button>
-                    <Button colorScheme="blue" size="lg" minW="100px" onClick={handleSave} isLoading={loading}>
-                        저장
-                    </Button>
-                </Container>
-            </Box>
+      <Box mb={10}>
+        <FeedbackMemo 
+          value={data.memo} 
+          onChange={(val) => setData({ ...data, memo: val })} 
+        />
+      </Box>
+
+      <Box mb={10}>
+        <SubjectFeedback 
+          subjects={data.subjects} 
+          onChange={handleSubjectChange} 
+        />
+      </Box>
+
+      <Box mb={24}>
+        <OperationalFeedback 
+          value={data.operation} 
+          onChange={(val) => setData({ ...data, operation: val })} 
+        />
+      </Box>
+
+      <Box 
+        position="fixed" 
+        bottom={0} 
+        left={0} 
+        right={0} 
+        p={4} 
+        bg="white" 
+        borderTop="1px solid" 
+        borderColor="gray.200" 
+        zIndex={10}
+      >
+        <Container maxW="container.lg">
+          <Flex justify="flex-end" gap={4}>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              minW="100px"
+              onClick={handleCancel}
+            >
+              취소
+            </Button>
+            <Button 
+              colorScheme="blue" 
+              size="lg" 
+              minW="100px" 
+              onClick={handleSave} 
+              isLoading={loading}
+            >
+              저장
+            </Button>
+          </Flex>
         </Container>
-    );
+      </Box>
+    </Container>
+  );
 };
-import { VStack } from '@chakra-ui/react'; // Missing import fix
 
 export default ZoomFeedbackPage;

@@ -1,17 +1,19 @@
 export interface TaskFeedback {
   id: string;
-  content: string;
-  createdAt: string;
-  xPos: number;
-  yPos: number;
+  content: string;          
+  imageUrl: string | null;   
+  createdAt: string;        
+  xPos: number;             
+  yPos: number;              
   taskId: string;
   mentorId: string;
-  imageId: string;
+  imageId: string;          
 }
 
 export const mapTaskFeedbackFromApi = (raw: any): TaskFeedback => ({
   id: String(raw.id),
   content: raw.content,
+  imageUrl: raw.image_url,
   createdAt: raw.created_at,
   xPos: raw.x_pos,
   yPos: raw.y_pos,
