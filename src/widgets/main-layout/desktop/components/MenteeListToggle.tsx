@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Box, Flex, Text } from '@chakra-ui/react';
 import { ChevronDownIcon, ChevronRightIcon } from '@chakra-ui/icons';
-import { MenteeMenuItem } from './MenteeMenuItem';
-import { MenteeNavItem } from './types';
+import { MenteeMenuItem, MenteeNavItem } from './MenteeMenuItem';
 
 interface Props {
   mentees: MenteeNavItem[];
