@@ -31,7 +31,7 @@ export const MenteeList = ({ mentees }: Props) => {
                 fontStyle="normal"
                 fontWeight="700"
                 lineHeight="normal"
-                mb={4}
+                mb="28px"
             >
                 담당 멘티
             </Text>
@@ -39,30 +39,31 @@ export const MenteeList = ({ mentees }: Props) => {
             <Box position="relative">
                 <IconButton
                     aria-label="Scroll Left"
-                    icon={<ChevronLeftIcon w={6} h={6} />}
+                    icon={<ChevronLeftIcon w={10} h={10} />}
                     position="absolute"
+                    left="-60px"
                     top="50%"
                     transform="translateY(-50%)"
                     zIndex={10}
                     isRound
-                    size="sm"
+                    w="40px"
+                    h="40px"
                     bg="white"
-                    shadow="md"
+                    boxShadow="0 4px 4px 0 rgba(57, 83, 177, 0.25)"
                     border="1px solid"
-                    borderColor="gray.100"
+                    borderColor="#FFFFFF"
                     color="gray.500"
-                    _hover={{ bg: 'gray.50', color: 'gray.700' }}
+                    _hover={{ bg: 'gray.50', color: 'gray.500' }}
                     onClick={() => handleScroll('left')}
                     display={{ base: 'none', md: 'flex' }}
                 />
 
                 <HStack
                     ref={scrollContainerRef}
-                    spacing={6}
                     overflowX="auto"
-                    py={4}
-                    px={20}
-                    mx={-6}
+                    scrollBehavior="smooth"
+                    gap="20px"
+                    p="5px 0px 5px 0px"
                     css={{
                         '&::-webkit-scrollbar': { display: 'none' },
                         scrollbarWidth: 'none',
@@ -75,20 +76,21 @@ export const MenteeList = ({ mentees }: Props) => {
 
                 <IconButton
                     aria-label="Scroll Right"
-                    icon={<ChevronRightIcon w={6} h={6} />}
+                    icon={<ChevronRightIcon w={10} h={10} />}
                     position="absolute"
-                    right={4}
+                    right="-60px"
                     top="50%"
                     transform="translateY(-50%)"
                     zIndex={10}
                     isRound
-                    size="sm"
+                    w="40px"
+                    h="40px"
                     bg="white"
-                    shadow="md"
+                    boxShadow="0 4px 4px 0 rgba(57, 83, 177, 0.25)"
                     border="1px solid"
-                    borderColor="gray.100"
+                    borderColor="#FFFFFF"
                     color="gray.500"
-                    _hover={{ bg: 'gray.50', color: 'gray.700' }}
+                    _hover={{ bg: 'gray.50', color: 'gray.500' }}
                     onClick={() => handleScroll('right')}
                     display={{ base: 'none', md: 'flex' }}
                 />

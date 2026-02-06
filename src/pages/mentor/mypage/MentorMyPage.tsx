@@ -12,7 +12,7 @@ import {
 
 export default function MentorMyPage() {
   return (
-    <Box maxW="1200px" mx="auto">
+    <Box maxW="1300px" mx="auto">
       <Text fontSize="36px" fontWeight="700" mb="71px">마이페이지</Text>
 
       <Box mb="67px">
@@ -26,7 +26,7 @@ export default function MentorMyPage() {
         <MenteeList mentees={MOCK_MY_MENTEES} />
       </Box>
 
-      <Divider mt="60px" mb="60px" borderColor="#E2E8F0" />
+      <Divider h="3px" mt="52px" mb="52px" bg="#F4F4F4" />
 
 
       <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6} pb={10}>
