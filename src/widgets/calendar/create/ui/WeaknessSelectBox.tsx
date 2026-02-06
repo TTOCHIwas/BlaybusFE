@@ -1,4 +1,4 @@
-import React from 'react';
+import { Box, Select, Text } from '@chakra-ui/react';
 import { useScheduleCreateStore } from '../model/store';
 import { MOCK_WEAKNESSES } from '../model/mockData';
 
@@ -11,26 +11,29 @@ export const WeaknessSelectBox = () => {
     const filteredWeaknesses = MOCK_WEAKNESSES.filter((w) => w.subject === subject);
 
     return (
-        <div className="mb-8 animate-fadeIn">
-            <label className="block text-lg font-bold text-gray-900 mb-3">보완점</label>
-            <div className="w-full">
-                <select
+        <Box mb={8} animation="fadeIn 0.3s">
+            <Text fontSize="lg" fontWeight="bold" color="gray.900" mb={3}>보완점</Text>
+            <Box w="full">
+                <Select
                     value={selectedWeaknessId || ''}
                     onChange={(e) => setSelectedWeaknessId(e.target.value)}
-                    className="w-full p-3 bg-white border border-pink-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-300 transition-shadow appearance-none cursor-pointer"
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: `right 0.5rem center`, backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em' }}
+                    placeholder="보완점 강의/오답노트 선택"
+                    bg="white"
+                    borderColor="pink.200"
+                    focusBorderColor="pink.300"
+                    size="md"
+                    borderRadius="lg"
                 >
-                    <option value="">보완점 강의/오답노트 선택</option>
                     {filteredWeaknesses.map((w) => (
                         <option key={w.id} value={w.id}>
                             {w.label}
                         </option>
                     ))}
-                </select>
+                </Select>
                 {filteredWeaknesses.length === 0 && (
-                    <p className="text-sm text-gray-500 mt-2">해당 과목에 등록된 보완점 자료가 없습니다.</p>
+                    <Text fontSize="sm" color="gray.500" mt={2}>해당 과목에 등록된 보완점 자료가 없습니다.</Text>
                 )}
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 };
