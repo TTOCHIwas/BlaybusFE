@@ -1,4 +1,4 @@
-import { Box, Text, Grid, GridItem } from '@chakra-ui/react';
+import { Box, Text, Grid, GridItem, Divider } from '@chakra-ui/react';
 import { MenteeProfileSection } from '../../../widgets/mentee-profile/ui/MenteeProfileSection';
 import { MentorPlannerSection } from '@/widgets/mentor-planner';
 import { MenteeWeaknessSection } from '@/widgets/mentor-weakness/ui/MenteeWeaknessSection';
@@ -13,8 +13,17 @@ const MentorMenteeManagePage = () => {
 
             <MenteeProfileSection profile={MOCK_MENTEE_PROFILE} userRole='MENTOR' />
 
-            <Box mt={8}>
-                <MentorPlannerSection />
+            <Divider
+                orientation="horizontal"
+                borderBottomWidth="3px"
+                borderColor="#F4F4F4"
+                my="50px"
+                opacity={1}
+                borderStyle="solid"
+            />
+
+            <Box>
+                <MentorPlannerSection menteeName={MOCK_MENTEE_PROFILE.name} />
             </Box>
 
             <Box mt={8}>
