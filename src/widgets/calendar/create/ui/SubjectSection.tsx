@@ -1,41 +1,44 @@
-import React from 'react';
+import { Box, Button, HStack, Text } from '@chakra-ui/react';
 import { useScheduleCreateStore } from '../model/store';
 import { Subject } from '../model/types';
 
 export const SubjectSection = () => {
     const { subject, isWeaknessSelected, setSubject, toggleWeakness } = useScheduleCreateStore();
 
-    const subjects: { label: string; value: Subject; colorClass: string; activeColorClass: string }[] = [
-        { label: '국어', value: 'KOREAN', colorClass: 'hover:bg-blue-50 text-blue-500 border-blue-200', activeColorClass: 'bg-blue-500 text-white border-blue-500' },
-        { label: '영어', value: 'ENGLISH', colorClass: 'hover:bg-purple-50 text-purple-500 border-purple-200', activeColorClass: 'bg-purple-500 text-white border-purple-500' },
-        { label: '수학', value: 'MATH', colorClass: 'hover:bg-orange-50 text-orange-500 border-orange-200', activeColorClass: 'bg-orange-500 text-white border-orange-500' },
+    const subjects: { label: string; value: Subject; colorScheme: string }[] = [
+        { label: '국어', value: 'KOREAN', colorScheme: 'blue' },
+        { label: '영어', value: 'ENGLISH', colorScheme: 'purple' },
+        { label: '수학', value: 'MATH', colorScheme: 'orange' },
     ];
 
     return (
-        <div className="mb-8">
-            <label className="block text-lg font-bold text-gray-900 mb-3">과목</label>
-            <div className="flex items-center gap-2">
+        <Box mb={8}>
+            <Text fontSize="lg" fontWeight="bold" color="gray.900" mb={3}>과목</Text>
+            <HStack spacing={2}>
                 {subjects.map((sub) => (
-                    <button
+                    <Button
                         key={sub.value}
                         onClick={() => setSubject(sub.value)}
-                        className={`px-6 py-2 rounded-lg border transition-colors font-medium ${subject === sub.value ? sub.activeColorClass : `bg-white border-gray-200 text-gray-500 ${sub.colorClass}`
-                            }`}
+                        colorScheme={sub.colorScheme}
+                        variant={subject === sub.value ? 'solid' : 'outline'}
+                        size="md"
+                        borderRadius="lg"
                     >
                         {sub.label}
-                    </button>
+                    </Button>
                 ))}
 
-                <button
+                <Button
                     onClick={toggleWeakness}
-                    className={`px-6 py-2 rounded-lg border transition-colors font-medium ml-2 ${isWeaknessSelected
-                            ? 'bg-blue-400 text-white border-blue-400'
-                            : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'
-                        }`}
+                    colorScheme="blue"
+                    variant={isWeaknessSelected ? 'solid' : 'outline'}
+                    size="md"
+                    borderRadius="lg"
+                    ml={2}
                 >
                     보완점
-                </button>
-            </div>
-        </div>
+                </Button>
+            </HStack>
+        </Box>
     );
 };
