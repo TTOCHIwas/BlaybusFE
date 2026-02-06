@@ -1,1 +1,1 @@
-export { default as MentorMenteeManagePage } from './MentorMenteeManagePage';
+export { default } from './MentorMenteeManagePage';
