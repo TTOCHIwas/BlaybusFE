@@ -61,12 +61,9 @@ export const MentorPlannerSection = ({ menteeName }: Props) => {
     return (
         <Box>
             <Box
-                bg="white"
-                borderRadius="3xl"
-                boxShadow="sm"
                 mb={8}
             >
-                <Text fontSize="xl" fontWeight="bold" mb={6}>{menteeName}님 플래너</Text>
+                <Text fontSize="20px" fontWeight="bold" mb={6}>{menteeName}님 플래너</Text>
 
                 <DateController
                     currentDate={currentDate}
@@ -74,16 +71,18 @@ export const MentorPlannerSection = ({ menteeName }: Props) => {
                 />
 
                 <Flex
-                    gap={12}
+                    gap="34px"
                     align="flex-start"
                     direction={{ base: 'column', md: 'row' }}
-                    mb={8}
+                    mb={10}
+                    bg="#F9F9FB"
+                    p="32px 48px"
+                    borderRadius="3xl"
                 >
                     <Box
                         flex={1}
                         w="full"
                         minW={0}
-                        h={{ base: 'auto', md: '680px' }}
                     >
                         <MentorTaskList
                             tasks={dailyTasks}

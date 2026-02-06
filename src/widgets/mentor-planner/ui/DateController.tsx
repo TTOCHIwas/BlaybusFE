@@ -55,7 +55,7 @@ export const DateController = ({ currentDate, onChangeDate }: Props) => {
   const DropdownButton = ({ label }: { label: string }) => (
     <MenuButton
       as={Button}
-      rightIcon={<ChevronDownIcon color="#718096" boxSize="20px" />}
+      rightIcon={<ChevronDownIcon color="#373E56" boxSize="20px" />}
       bg="white"
       border="1px solid"
       borderColor="#53A8FE"
@@ -125,7 +125,7 @@ export const DateController = ({ currentDate, onChangeDate }: Props) => {
               <Text
                 fontSize="lg"
                 fontWeight="medium"
-                color={isSelected ? 'blue.500' : isSunday ? 'red.400' : 'gray.400'}
+                color={isSelected ? '#53A8FE' : isSunday ? 'red.400' : '#7E7E7E'}
                 mb={2}
                 _groupHover={{ color: !isSelected ? 'gray.600' : undefined }}
               >
@@ -138,14 +138,14 @@ export const DateController = ({ currentDate, onChangeDate }: Props) => {
                 align="center"
                 justify="center"
                 borderRadius="12px"
-                bg={isSelected ? 'blue.500' : 'transparent'}
+                bg={isSelected ? '#53A8FE' : 'transparent'}
                 transition="all 0.2s"
-                _groupHover={{ bg: !isSelected ? 'gray.100' : undefined }}
+                _groupHover={{ bg: !isSelected ? '#F9F9FB' : undefined }}
               >
                 <Text
                   fontSize="xl"
                   fontWeight="bold"
-                  color={isSelected ? 'white' : 'gray.800'}
+                  color={isSelected ? 'white' : '#7E7E7E'}
                 >
                   {dayNum}
                 </Text>
