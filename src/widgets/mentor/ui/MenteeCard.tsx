@@ -14,7 +14,8 @@ export const MenteeCard = ({ mentee }: Props) => {
       display="flex"
       flexDirection="column"
       alignItems="flex-start"
-      minW="380px"
+      justifyContent="center"
+      minW="337px"
       h="185px"
       p="30px 21px"
       borderRadius="20px"
@@ -35,15 +36,31 @@ export const MenteeCard = ({ mentee }: Props) => {
           src={mentee.profileImgUrl || undefined}
         />
 
-        <VStack align="stretch" spacing={3} flex={1} justify="center">
-          <Text fontWeight="extrabold" fontSize="lg" lineHeight="1">
+        <VStack
+          display="flex"
+          w="183px"
+          align="flex-start"
+          spacing="33px"
+          justify="center"
+        >
+          <Text color="#373E56"
+            fontSize="18px"
+            fontStyle="normal"
+            fontWeight="600"
+            lineHeight="normal"
+          >
             {mentee.name}님
           </Text>
 
-          <VStack spacing={2} align="stretch">
-            <AchievementRow label="국" value={mentee.achievement.korean} colorScheme="blue" />
-            <AchievementRow label="영" value={mentee.achievement.english} colorScheme="green" />
-            <AchievementRow label="수" value={mentee.achievement.math} colorScheme="purple" />
+          <VStack display="flex"
+            flexDirection="column"
+            alignItems="flex-start"
+            gap="8px"
+            alignSelf="stretch"
+          >
+            <AchievementRow label="국" value={mentee.achievement.korean} colorScheme="#53A8FE" />
+            <AchievementRow label="영" value={mentee.achievement.english} colorScheme="#35CE9D" />
+            <AchievementRow label="수" value={mentee.achievement.math} colorScheme="#A16AFF" />
           </VStack>
         </VStack>
       </Flex>
@@ -52,20 +69,31 @@ export const MenteeCard = ({ mentee }: Props) => {
 };
 
 const AchievementRow = ({ label, value, colorScheme }: { label: string; value: number; colorScheme: string }) => (
-  <Flex align="center">
-    <Text fontSize="sm" fontWeight="bold" color="gray.500" w="20px" mb="1px">
+  <Flex display="flex"
+    alignItems="center"
+    gap="9px"
+    alignSelf="stretch"
+  >
+    <Text color="#394250"
+      fontSize="13px"
+      fontStyle="normal"
+      fontWeight="400"
+      lineHeight="normal"
+    >
       {label}
     </Text>
-    <Box flex={1} ml={3}>
+    <Box>
       <Progress
         value={value}
-        height="8px"
-        colorScheme={colorScheme}
-        borderRadius="full"
-        bg="gray.100"
+        w="162px"
+        h="8px"
+        borderRadius="5px"
+        border="1px solid #BADDFF"
+        bg="white"
         sx={{
           '& > div': {
             transition: 'width 0.5s ease-in-out',
+            backgroundColor: colorScheme,
           }
         }}
       />
