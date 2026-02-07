@@ -7,7 +7,7 @@ const LoginPage = () => {
       <VStack spacing={8}>
         {/* Logo Section */}
         <Box>
-          <img src="/src/assets/logo_login.svg" alt="SeolStudy Logo" width="120" />
+          <img src="/src/assets/Subtract.svg" alt="SeolStudy Logo" width="120" />
         </Box>
 
         <Box
