@@ -2,7 +2,7 @@ import { Box, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
 import { ReportDateController } from './ReportDateController';
 import { ReportSection } from './ReportSection';
-import { ReportData } from '@/pages/mentor/mentee/report/mockReportData';
+import { ReportData } from '@/widgets/mentor-report/model/mockReportData';
 
 interface Props {
     data: ReportData;

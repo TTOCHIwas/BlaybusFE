@@ -4,7 +4,7 @@ import { Box, Heading, Button, useToast, Container, Text, Flex } from '@chakra-u
 import { format, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { ReportDetailWidget } from '@/widgets/mentor-report/detail/ReportDetailWidget';
-import { ReportData } from './mockReportData';
+import { ReportData } from '@/widgets/mentor-report/model/mockReportData';
 import {
   getWeeklyReportById,
   getWeeklyReportByStartDate
