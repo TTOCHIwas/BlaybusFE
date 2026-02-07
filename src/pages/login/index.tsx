@@ -1,26 +1,28 @@
-import { Center, Box, Heading, Text, VStack } from '@chakra-ui/react';
+import { Center, Box, VStack } from '@chakra-ui/react';
 import { LoginForm } from '@/features/auth';
 
 const LoginPage = () => {
   return (
-    <Center minH="100vh" bg="gray.50" p={4}>
-      <Box
-        w="full"
-        maxW="400px"
-        bg="white"
-        p={8}
-        borderRadius="xl"
-        boxShadow="lg"
-      >
-        <VStack spacing={6} mb={8}>
-          <Heading size="xl" color="blue.600">설스터디</Heading>
-          <Text color="gray.600" fontSize="sm">
-            서울대생 멘토와 함께하는 수능 코칭
-          </Text>
-        </VStack>
+    <Center minH="100vh" bg="#F9F9FB" p={4}>
+      <VStack spacing={8}>
+        {/* Logo Section */}
+        <Box>
+          <img src="/src/assets/logo_login.svg" alt="SeolStudy Logo" width="120" />
+        </Box>
 
-        <LoginForm />
-      </Box>
+        <Box
+          w="full"
+          minW="400px" // Slightly wider as per screenshot implication
+          bg="white"
+          p={10}
+          borderRadius="2xl"
+          boxShadow="sm"
+          border="1px solid"
+          borderColor="#E0E5EB"
+        >
+          <LoginForm />
+        </Box>
+      </VStack>
     </Center>
   );
 };
