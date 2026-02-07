@@ -23,10 +23,10 @@ export const SubjectFeedbackItem = ({ subject, value, onChange }: Props) => {
                 <Box
                     bg={config.color}
                     color="white"
-                    fontSize="14px"
+                    fontSize="16px"
                     fontWeight="600"
-                    px="12px"
-                    py="4px"
+                    px="15px"
+                    py="6px"
                     borderRadius="15px"
                     minW="50px"
                     textAlign="center"
