@@ -28,13 +28,13 @@ export const FeedbackDateController = ({
             rightIcon={<ChevronDownIcon color="#373E56" boxSize="5" />}
             bg="white"
             border="1px solid"
-            borderColor="#E2E4E8"
-            borderRadius="8px"
+            borderColor="#53A8FE"
+            borderRadius="9px"
             fontSize="14px"
             fontWeight="500"
             color="#373E56"
             h="40px"
-            minW="100px"
+            gap="8px"
             textAlign="left"
             _hover={{ bg: '#F9F9FB' }}
             _active={{ bg: '#F0F2F5' }}

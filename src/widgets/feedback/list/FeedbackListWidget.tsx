@@ -48,7 +48,7 @@ export const FeedbackListWidget = () => {
                 />
             </Flex>
 
-            <Box bg="white" borderRadius="20px">
+            <Box bg="white" borderRadius="22px">
                 <VStack spacing={3} align="stretch">
                     {filteredList.length > 0 ? (
                         filteredList.map((item) => (

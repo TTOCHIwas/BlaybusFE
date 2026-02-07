@@ -26,8 +26,8 @@ export const SubjectFilter = ({ selectedSubject, onChange }: Props) => {
                         color={isSelected ? 'white' : '#A0A5B1'}
                         border="1px solid"
                         borderColor={isSelected ? '#53A8FE' : '#E2E4E8'}
-                        borderRadius="full"
-                        fontSize="14px"
+                        borderRadius="18px"
+                        fontSize="16px"
                         fontWeight="600"
                         px={6}
                         h="36px"
