@@ -80,10 +80,10 @@ const ZoomFeedbackPage = () => {
   };
 
   return (
-    <Container maxW="container.lg" py={10}>
+    <Container maxW="1200px" py={10}>
       <Flex justifyContent="space-between" alignItems="center" mb={12}>
         <VStack align="start" spacing={1}>
-          <Heading as="h1" size="lg" color="gray.800">
+          <Heading as="h1" size="lg" color="#373E56">
             줌 미팅 피드백
           </Heading>
         </VStack>
