@@ -1,7 +1,5 @@
-import { apiClient } from '@/shared/api/base';
+﻿import { apiClient } from '@/shared/api/base';
 import type { MenteeNavItem } from '@/widgets/main-layout/desktop/components/MenteeMenuItem';
-import { USE_MOCK } from '@/shared/mocks/mockEnv';
-import { mockApi } from '@/shared/mocks/mockApi';
 import { asArray, asRecord, asString, pick } from '@/shared/api/parse';
 
 const normalizeMentee = (raw: unknown): MenteeNavItem => {
@@ -14,7 +12,6 @@ const normalizeMentee = (raw: unknown): MenteeNavItem => {
 
 export const mentoringApi = {
   listMentees: async (params?: { page?: number; size?: number }): Promise<MenteeNavItem[]> => {
-    if (USE_MOCK) return mockApi.mentoring.listMentees();
     const data = await apiClient.get('/mentor/mentees', { params });
     const obj = asRecord(data, 'MenteeNavList');
     const list = Array.isArray(data)

@@ -7,7 +7,7 @@ const LoginPage = () => {
         <Center minH="100vh" bg="#F9F9FB" p={4}>
             <VStack spacing={10} mb={32}>
                 <Box mb={8}>
-                    <LogoIcon />
+                    <LogoIcon size={90}/>
                 </Box>
 
                 <Box

@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
 
-const PREVIEW_MAX_LENGTH = 20;
+const PREVIEW_MAX_LENGTH = 34;
 
 export const extractPreviewText = (content: string): string => {
   const tagPattern = /<강조>([^<]+)<\/강조>/g;
@@ -105,7 +105,6 @@ export const getPinPositionStyles = (xPos: number, yPos: number) => {
     position: 'relative',
     width: 'max-content', 
     flexShrink: 0,       
-    whiteSpace: 'nowrap',
   };
 
   const pointerStyle: CSSProperties = {

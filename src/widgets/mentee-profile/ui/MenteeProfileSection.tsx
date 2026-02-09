@@ -122,7 +122,7 @@ export const MenteeProfileSection = ({ profile, userRole }: Props) => {
                 w: { base: '86px', md: '144px' },
                 h: { base: '86px', md: '144px' }
               }}
-              icon={<BasicAvartarIcon />}
+              icon={<BasicAvartarIcon size={'144px'}/>}
             />
           )}
 

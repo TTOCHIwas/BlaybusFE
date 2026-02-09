@@ -27,9 +27,8 @@ const MenteeFeedbackPage = () => {
 
         <Box mb={6}>
             {user && (
-                <ZoomFeedbackList 
-                    menteeId={user.id} 
-                    onItemClick={handleZoomItemClick} 
+                <ZoomFeedbackList
+                    onItemClick={handleZoomItemClick}
                 />
             )}
         </Box>

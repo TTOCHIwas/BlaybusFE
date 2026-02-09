@@ -14,12 +14,12 @@ export const WeaknessSelectBox = () => {
 
     // Find selected label for display
     const selectedLabel = selectedWeaknessId
-        ? filteredWeaknesses.find(w => w.id === selectedWeaknessId)?.title || 'λ³΄μ™„  κ°•μ/¤‹µ…ΈΈ „ ƒ'
-        : 'λ³΄μ™„  —†';
+        ? filteredWeaknesses.find((w) => w.id === selectedWeaknessId)?.title || 'λ³΄μ™„μ  μ„ νƒ'
+        : 'λ³΄μ™„μ  μ—†μ';
 
     return (
         <Box animation="fadeIn 0.3s">
-            <Text fontSize="lg" fontWeight="bold" color="gray.900" mb={3}>λ³΄μ™„ </Text>
+            <Text fontSize="lg" fontWeight="bold" color="gray.900" mb={3}>λ³΄μ™„μ </Text>
             <Box w="full">
                 <Menu matchWidth>
                     <MenuButton
@@ -54,7 +54,7 @@ export const WeaknessSelectBox = () => {
                             _hover={{ bg: 'pink.50' }}
                             color="gray.500"
                         >
-                            λ³΄μ™„  —†
+                            λ³΄μ™„μ  μ—†μ
                         </MenuItem>
                         {filteredWeaknesses.map((w) => (
                             <MenuItem
@@ -70,7 +70,7 @@ export const WeaknessSelectBox = () => {
                 </Menu>
 
                 {filteredWeaknesses.length === 0 && (
-                    <Text fontSize="sm" color="gray.500" mt={2}>•΄‹Ή κ³Όλª©— “±λ΅λ λ³΄μ™„  λ£κ —†µ‹‹¤.</Text>
+                    <Text fontSize="sm" color="gray.500" mt={2}>μ„ νƒν• κ³Όλª©μ— λ“±λ΅λ λ³΄μ™„μ μ΄ μ—†μµλ‹λ‹¤.</Text>
                 )}
             </Box>
         </Box>

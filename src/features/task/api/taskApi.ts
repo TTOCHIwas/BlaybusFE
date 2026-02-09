@@ -1,9 +1,7 @@
-import { apiClient } from '@/shared/api/base';
+﻿import { apiClient } from '@/shared/api/base';
 import { mapTaskFromApi } from '@/entities/task/types';
 import type { TaskDetailFullData, FileData } from '@/entities/task-detail/types';
 import type { Subject } from '@/shared/constants/subjects';
-import { USE_MOCK } from '@/shared/mocks/mockEnv';
-import { mockApi } from '@/shared/mocks/mockApi';
 import { asArray, asOptionalString, asRecord, asString, isRecord, pick } from '@/shared/api/parse';
 
 const toFileData = (raw: unknown): FileData | null => {
@@ -61,7 +59,6 @@ const toSubmission = (raw: unknown): TaskDetailFullData['submission'] | null => 
 
 export const taskApi = {
   getTaskDetail: async (taskId: string): Promise<TaskDetailFullData> => {
-    if (USE_MOCK) return mockApi.task.getTaskDetail(taskId);
     const taskRaw = await apiClient.get(`/tasks/${taskId}`);
     let submissionRaw: unknown = null;
     try {
@@ -95,19 +92,16 @@ export const taskApi = {
   },
 
   createMenteeTask: async (payload: { date: string; title: string; subject: string }) => {
-    if (USE_MOCK) return mockApi.task.createMenteeTask(payload);
     const data = await apiClient.post('/tasks', payload);
     return mapTaskFromApi(data);
   },
 
   updateTask: async (taskId: string, payload: { title?: string; subject?: string; status?: string }) => {
-    if (USE_MOCK) return mockApi.task.updateTask(taskId, payload);
     const data = await apiClient.put(`/tasks/${taskId}`, payload);
     return mapTaskFromApi(data);
   },
 
   deleteTask: async (taskId: string): Promise<void> => {
-    if (USE_MOCK) return mockApi.task.deleteTask(taskId);
     await apiClient.delete(`/tasks/${taskId}`);
   },
 
@@ -124,29 +118,24 @@ export const taskApi = {
       dayContents: Array<{ day: string; contentId?: string | number | null }>;
     }
   ): Promise<void> => {
-    if (USE_MOCK) return mockApi.task.createMentorTask(menteeId, payload);
     await apiClient.post(`/tasks/${menteeId}`, payload);
   },
 
   confirmMentorTask: async (taskId: string): Promise<void> => {
-    if (USE_MOCK) return mockApi.task.confirmMentorTask(taskId);
     await apiClient.patch(`/mentor/tasks/${taskId}/confirm`);
   },
 
   startTaskTimer: async (taskId: string) => {
-    if (USE_MOCK) return mockApi.task.startTaskTimer(taskId);
     const data = await apiClient.patch(`/tasks/${taskId}/timer/start`);
     return data;
   },
 
   stopTaskTimer: async (taskId: string) => {
-    if (USE_MOCK) return mockApi.task.stopTaskTimer(taskId);
     const data = await apiClient.patch(`/tasks/${taskId}/timer/stop`);
     return data;
   },
 
   getTaskLogs: async (taskId: string) => {
-    if (USE_MOCK) return mockApi.task.getTaskLogs(taskId);
     const data = await apiClient.get(`/tasks/${taskId}/logs`);
     if (Array.isArray(data)) return data;
     const obj = asRecord(data, 'TaskLogs');

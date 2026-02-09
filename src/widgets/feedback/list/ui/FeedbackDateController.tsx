@@ -50,7 +50,7 @@ export const FeedbackDateController = ({
                 <MenuList>
                     {years.map((y) => (
                         <MenuItem key={y} onClick={() => onChangeYear(y)}>
-                            {y} Year
+                            {y} 년
                         </MenuItem>
                     ))}
                 </MenuList>
@@ -61,7 +61,7 @@ export const FeedbackDateController = ({
                 <MenuList maxH="200px" overflowY="auto">
                     {months.map((m) => (
                         <MenuItem key={m} onClick={() => onChangeMonth(m)}>
-                            {m} Month
+                            {m} 월
                         </MenuItem>
                     ))}
                 </MenuList>
@@ -72,7 +72,7 @@ export const FeedbackDateController = ({
                 <MenuList>
                     {weeks.map((w) => (
                         <MenuItem key={w} onClick={() => onChangeWeek(w)}>
-                            {w} Week
+                            {w} 주차
                         </MenuItem>
                     ))}
                 </MenuList>

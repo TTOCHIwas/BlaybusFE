@@ -130,8 +130,8 @@ export const ScheduleCreateForm = () => {
 
     return (
         <Flex direction="column" w="full" h="full" p={8}>
-            <Heading size="lg" mb={4}>Create Schedule</Heading>
-            <Text color="gray.500" mb={8}>Create tasks that match the student needs.</Text>
+            <Heading size="lg" mb={4}>일정 만들기</Heading>
+            <Text color="gray.500" mb={8}>학생의 학습 성향에 맞는 과제를 설정해주세요.</Text>
 
             <Box flex={1} bg="white" borderRadius="lg" p={0}>
                 <VStack spacing={8} align="stretch">
@@ -148,9 +148,9 @@ export const ScheduleCreateForm = () => {
                     {/* Title Row - Left Column Only */}
                     <Flex gap={10}>
                         <Box flex={1}>
-                            <Text fontSize="lg" fontWeight="bold" color="gray.900" mb={3}>Title</Text>
+                            <Text fontSize="lg" fontWeight="bold" color="gray.900" mb={3}>제목</Text>
                             <Input
-                                placeholder="Enter a title (e.g. Worksheet 2-1)"
+                                placeholder="제목을 입력해주세요."
                                 size="lg"
                                 fontSize="md"
                                 bg="white"

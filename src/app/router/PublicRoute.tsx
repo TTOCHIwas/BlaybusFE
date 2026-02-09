@@ -1,14 +1,15 @@
 import { Navigate } from 'react-router-dom';
-import { useAuthStore } from '@/shared/stores/authStore';
+import { useAuthStore, isTokenValid } from '@/shared/stores/authStore';
 
 interface PublicRouteProps {
   children: React.ReactNode;
 }
 
 export const PublicRoute = ({ children }: PublicRouteProps) => {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, token } = useAuthStore();
+  const tokenValid = isTokenValid(token);
 
-  if (isAuthenticated && user) {
+  if (isAuthenticated && tokenValid && user) {
     if (user.role === 'MENTOR') {
       return <Navigate to="/mentor" replace />;
     }

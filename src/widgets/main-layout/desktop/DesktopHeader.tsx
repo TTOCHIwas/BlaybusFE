@@ -1,15 +1,13 @@
-import { Flex, IconButton, Text, HStack } from '@chakra-ui/react';
-import { HamburgerIcon } from '@chakra-ui/icons';
+import { Flex, Text, HStack, Box } from '@chakra-ui/react';
 import { useAuthStore } from '@/shared/stores/authStore';
 import { useLocation } from 'react-router-dom';
 import { NotificationBell } from '@/widgets/notifications/NotificationBell';
 
 interface Props {
-  onToggleSidebar: () => void;
   isCollapsed: boolean;
 }
 
-export const DesktopHeader = ({ onToggleSidebar, isCollapsed }: Props) => {
+export const DesktopHeader = ({ isCollapsed }: Props) => {
   const { user } = useAuthStore();
   const sidebarWidth = isCollapsed ? '80px' : '280px';
   const location = useLocation();
@@ -22,6 +20,8 @@ export const DesktopHeader = ({ onToggleSidebar, isCollapsed }: Props) => {
   ];
   const showNotificationBell =
     user?.role === 'MENTEE' && menteeHeaderPaths.includes(location.pathname);
+  const showGreeting =
+    location.pathname === '/mentee/mypage' || location.pathname === '/mentor/mypage';
 
   return (
     <Flex
@@ -39,29 +39,23 @@ export const DesktopHeader = ({ onToggleSidebar, isCollapsed }: Props) => {
       zIndex={1000}
       pointerEvents="none"
     >
-      <Text
-        fontFamily="Pretendard"
-        fontSize="20px"
-        fontWeight="600"
-        color="#394250"
-        lineHeight="normal"
-        pointerEvents="auto"
-      >
-        어서오세요, <Text as="span" color="#52A8FE">{user?.name}</Text>
-        {user?.role === 'MENTOR' ? '멘토님!' : '님!'}
-      </Text>
+      <Box flex="1">
+        {showGreeting && (
+          <Text
+            fontFamily="Pretendard"
+            fontSize="20px"
+            fontWeight="600"
+            color="#394250"
+            lineHeight="normal"
+            pointerEvents="auto"
+          >
+            어서오세요, <Text as="span" color="#52A8FE">{user?.name}</Text>
+            {user?.role === 'MENTOR' ? '멘토님!' : '님!'}
+          </Text>
+        )}
+      </Box>
       <HStack spacing={2} mr="24px" pointerEvents="auto">
         <NotificationBell isVisible={showNotificationBell} />
-        <IconButton
-          icon={<HamburgerIcon w={6} h={6} />}
-          aria-label="Toggle Sidebar"
-          onClick={onToggleSidebar}
-          bg="white"
-          boxShadow="0px 2px 5px rgba(0,0,0,0.1)"
-          borderRadius="full"
-          size="lg"
-          _hover={{ bg: 'gray.50' }}
-        />
       </HStack>
     </Flex>
   );

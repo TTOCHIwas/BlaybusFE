@@ -78,28 +78,28 @@ export const DateController = ({ currentDate, onChangeDate }: Props) => {
     <Flex direction="column" align="flex-start" mb={8} w="full">
       <HStack spacing="10px" mb={6}>
         <Menu>
-          <DropdownButton label={`${year} Year`} />
+          <DropdownButton label={`${year} 년`} />
           <MenuList>
             {years.map(y => (
-              <MenuItem key={y} onClick={() => handleYearChange(y)}>{y} Year</MenuItem>
+              <MenuItem key={y} onClick={() => handleYearChange(y)}>{y} 년</MenuItem>
             ))}
           </MenuList>
         </Menu>
 
         <Menu>
-          <DropdownButton label={`${month} Month`} />
+          <DropdownButton label={`${month} 월`} />
           <MenuList maxH="200px" overflowY="auto">
             {months.map(m => (
-              <MenuItem key={m} onClick={() => handleMonthChange(m)}>{m} Month</MenuItem>
+              <MenuItem key={m} onClick={() => handleMonthChange(m)}>{m} 월</MenuItem>
             ))}
           </MenuList>
         </Menu>
 
         <Menu>
-          <DropdownButton label={`${weekNumber} Week`} />
+          <DropdownButton label={`${weekNumber} 주차`} />
           <MenuList>
             {weeks.map(w => (
-              <MenuItem key={w} onClick={() => handleWeekChange(w)}>{w} Week</MenuItem>
+              <MenuItem key={w} onClick={() => handleWeekChange(w)}>{w} 주차</MenuItem>
             ))}
           </MenuList>
         </Menu>

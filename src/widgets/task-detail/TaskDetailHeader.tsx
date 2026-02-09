@@ -1,9 +1,8 @@
-// src/widgets/task-detail/TaskDetailHeader.tsx
+﻿// src/widgets/task-detail/TaskDetailHeader.tsx
 import { Badge, Box, HStack, Stack, Text, Flex } from '@chakra-ui/react';
 import { ReactNode } from 'react';
 import {SUBJECT_LABELS, SUBJECT_COLORS } from '@/shared/constants/subjects';
 
-// 과목 타입 정의
 export type Subject = 'KOREAN' | 'ENGLISH' | 'MATH' | 'OTHER';
 
 interface TaskDetailHeaderProps {
@@ -12,7 +11,9 @@ interface TaskDetailHeaderProps {
     isMentorChecked: boolean;
     title: string;
     supplement?: string;
-    action?: ReactNode; 
+    action?: ReactNode;
+    statusLabel?: string;
+    statusText?: string;
 }
 
 export const TaskDetailHeader = ({
@@ -22,7 +23,22 @@ export const TaskDetailHeader = ({
     title,
     supplement,
     action,
+    statusLabel,
+    statusText,
 }: TaskDetailHeaderProps) => {
+    const resolvedStatusLabel = statusLabel ?? '멘토 확인';
+    const statusContent = statusText
+        ? <Text color="#333333" fontWeight="bold">{statusText}</Text>
+        : isMentorChecked
+            ? (
+                <Box color="gray.300">
+                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" fill="#D1D5DB" />
+                        <path d="M7 12L10 15L17 8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </Box>
+            )
+            : <Text color="gray.400">미확인</Text>;
     return (
         <Box mb={{base:0, md:12}}>
             <Flex direction={{base:"column", md:"row"}} gap={{base: 4 ,md:0}} justify={{base:"flex-start",md:"space-between"}} align="start" mb={6}>
@@ -46,7 +62,7 @@ export const TaskDetailHeader = ({
                     <Text fontSize={{base:"md", md:"4xl"}} fontWeight="bold" color="#1A1A1A" lineHeight="1.2">
                         {title}
                     </Text>
-                    <Text color="#989898" fontWeight="medium" fontSize={'xs'}>{date}</Text>
+                    <Text display={{base:"flex", md:"none"}} color="#989898" fontWeight="medium" fontSize={'xs'}>{date}</Text>
                 </Flex>
                 
                 {action && (
@@ -91,21 +107,13 @@ export const TaskDetailHeader = ({
                     <Text color="#8e8e8e" fontWeight="medium" minW="30px" >날짜</Text>
                     <Text color="#333333" fontWeight="bold">{date}</Text>
                 </HStack>
-
                 <HStack spacing={4}>
-                    <Text color="#8e8e8e" fontWeight="medium" minW="60px" >멘토 확인</Text>
-                    {isMentorChecked ? (
-                        <Box color="gray.300">
-                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="12" cy="12" r="10" fill="#D1D5DB" />
-                                <path d="M7 12L10 15L17 8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </Box>
-                    ) : (
-                        <Text color="gray.400">미확인</Text>
-                    )}
+                    <Text color="#8e8e8e" fontWeight="medium" minW="60px" >{resolvedStatusLabel}</Text>
+                    {statusContent}
                 </HStack>
             </Stack>
         </Box>
     );
 };
+
+

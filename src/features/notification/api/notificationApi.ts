@@ -1,7 +1,5 @@
-import { apiClient } from '@/shared/api/base';
+﻿import { apiClient } from '@/shared/api/base';
 import { Notification, mapNotificationFromApi } from '@/entities/notification/types';
-import { USE_MOCK } from '@/shared/mocks/mockEnv';
-import { mockApi } from '@/shared/mocks/mockApi';
 import { asRecord, asArray, asNumber, pick } from '@/shared/api/parse';
 
 export type NotificationFilter = 'all' | 'unread' | 'read';
@@ -28,7 +26,6 @@ const normalizePage = (raw: unknown): NotificationPage => {
 
 export const notificationApi = {
   list: async (params?: { filter?: NotificationFilter; page?: number; size?: number }): Promise<NotificationPage> => {
-    if (USE_MOCK) return mockApi.notification.list(params);
     const data = await apiClient.get('/notifications', { params });
     return normalizePage(data);
   },
@@ -39,12 +36,10 @@ export const notificationApi = {
   },
 
   markRead: async (notificationId: string): Promise<void> => {
-    if (USE_MOCK) return mockApi.notification.markRead(notificationId);
     await apiClient.patch(`/notifications/${notificationId}/read`);
   },
 
   markReadAll: async (): Promise<void> => {
-    if (USE_MOCK) return mockApi.notification.markReadAll();
     await apiClient.patch('/notifications/read-all');
   },
 };

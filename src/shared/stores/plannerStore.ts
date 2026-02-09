@@ -3,7 +3,7 @@ import { Task } from '@/entities/task/types';
 import { TaskStatus } from '@/shared/constants/enums'; 
 import { TaskLog } from '@/entities/task-log/types';
 import { DailyPlanner } from '@/entities/daily-plan/types'; 
-import { getAdjustedDate } from '@/shared/lib/date';
+import { getAdjustedDate, parseDurationToSeconds } from '@/shared/lib/date';
 import { getAuthorizedUser } from './authStore'; 
 import { planApi } from '@/features/planner/api/planApi';
 
@@ -168,8 +168,20 @@ export const usePlannerStore = create<PlannerState>((set, get) => ({
   getLogsByTaskId: (taskId) => 
     get().taskLogs.filter((l) => l.taskId === taskId),
   
-  getTotalDurationByTaskId: (taskId) => 
-    get().taskLogs
+  getTotalDurationByTaskId: (taskId) => {
+    const totalFromLogs = get()
+      .taskLogs
       .filter((l) => l.taskId === taskId)
-      .reduce((sum, l) => sum + l.duration, 0),
+      .reduce((sum, l) => sum + l.duration, 0);
+
+    if (totalFromLogs > 0) return totalFromLogs;
+
+    const task = get().tasks.find((t) => t.id === taskId);
+    if (!task) return 0;
+
+    if (typeof task.actualStudyTime === 'number') return task.actualStudyTime;
+
+    const parsed = parseDurationToSeconds(task.actualStudyTimeFormatted ?? undefined);
+    return parsed ?? 0;
+  },
 }));

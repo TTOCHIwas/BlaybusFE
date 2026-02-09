@@ -130,9 +130,9 @@ const MenteeTaskDetailPage = () => {
 
   const handleBackToList = () => navigate(-1);
 
-  if (isLoading) return <Box p={10}>Loading...</Box>;
-  if (!user) return <Box p={10}>Login required.</Box>;
-  if (!data) return <Box p={10}>Task not found.</Box>;
+  if (isLoading) return <Box p={10}>로딩중...</Box>;
+  if (!user) return <Box p={10}>로그인이 필요합니다.</Box>;
+  if (!data) return <Box p={10}>과제가 없습니다..</Box>;
 
   return (
     <Container maxW="container.lg" py={6} minH="100vh">
@@ -152,7 +152,7 @@ const MenteeTaskDetailPage = () => {
           <>
             <Box>
               <Text fontSize={{ base: 'md', md: '2xl' }} fontWeight="bold" color="#333333" mb={6}>
-                Feedback on Submission
+                학습 점검하기
               </Text>
               <ImageSlider
                 images={submissionImages}
@@ -163,7 +163,7 @@ const MenteeTaskDetailPage = () => {
             </Box>
             <Box>
               <Text fontSize={{ base: 'md', md: '2xl' }} fontWeight="bold" mb={4} color="#333333">
-                My Memo
+                남긴 메모
               </Text>
               <Box p={6} bg="#F9FAFB" borderRadius="12px">
                 <Text color="#333333" fontSize="15px">
@@ -176,7 +176,7 @@ const MenteeTaskDetailPage = () => {
           <>
             <Box>
               <Text fontSize={{ base: 'md', md: '2xl' }} fontWeight="bold" color="#333333" mb={6}>
-                Task Materials
+                학습자료
               </Text>
 
               {studyMaterials.length > 0 ? (
@@ -189,7 +189,7 @@ const MenteeTaskDetailPage = () => {
                 </VStack>
               ) : (
                 <Box py={10} textAlign="center" bg="gray.50" borderRadius="xl" color="gray.500">
-                  No study materials registered.
+                  등록된 학습 자료가 없습니다.
                 </Box>
               )}
             </Box>
@@ -205,7 +205,7 @@ const MenteeTaskDetailPage = () => {
                 rightIcon={<ChevronRightIcon boxSize={6} />}
                 onClick={() => navigate(`/mentee/task/${taskId}/submit`)}
               >
-                {data.submission ? 'Edit Submission' : 'Submit Task'}
+                {data.submission ? '과제 수정하기' : '과제 제출하기'}
               </Button>
             </Flex>
           </>
@@ -213,7 +213,7 @@ const MenteeTaskDetailPage = () => {
 
         <Flex justify="center" pt={8} pb={10}>
           <Button size="lg" w="200px" h="52px" onClick={handleBackToList}>
-            Back to List
+            목록으로
           </Button>
         </Flex>
       </VStack>

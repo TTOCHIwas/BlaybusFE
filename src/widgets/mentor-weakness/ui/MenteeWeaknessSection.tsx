@@ -6,6 +6,7 @@ import { AddWeaknessButton } from './AddWeaknessButton';
 import { useParams } from 'react-router-dom';
 import { useMenteeWeaknesses } from '@/features/weakness/model/useMenteeWeaknesses';
 import { useWeaknessMutations } from '@/features/weakness/model/useWeaknessMutations';
+import { studyContentApi } from '@/features/study-content/api/studyContentApi';
 
 const SUBJECT_TABS: { value: Subject; label: string }[] = [
   { value: 'KOREAN', label: '국어' },
@@ -44,16 +45,47 @@ export const MenteeWeaknessSection = () => {
     setIsAdding(false);
   };
 
-  const handleSave = async (id: string, title: string, _fileName?: string) => {
-    void _fileName;
+  const handleSave = async ({
+    id,
+    title,
+    file,
+    existingContentId,
+  }: {
+    id: string;
+    title: string;
+    file?: File | null;
+    existingContentId?: string;
+  }) => {
     if (!menteeId) return;
 
+    const fallbackSubject = selectedSubject === 'ALL' ? 'KOREAN' : selectedSubject;
+    const target = isAdding ? undefined : list.find((w) => w.id === id);
+    const resolvedSubject = isAdding ? fallbackSubject : (target?.subject ?? fallbackSubject);
+    let contentId: string | number | undefined = existingContentId;
+
+    if (file) {
+      try {
+        const uploaded = await studyContentApi.upload(file, { title, subject: resolvedSubject });
+        contentId = uploaded?.id;
+      } catch (error) {
+        console.error('Failed to upload study content', error);
+        alert('파일 업로드에 실패했습니다.');
+        return;
+      }
+    }
+
+    if (!contentId) {
+      alert('파일을 첨부해주세요.');
+      return;
+    }
+
     if (isAdding) {
-      const subject = selectedSubject === 'ALL' ? 'KOREAN' : selectedSubject;
+      const subject = resolvedSubject;
       const created = await create.mutate({
         menteeId,
         subject,
         title,
+        contentId,
       });
       if (created) {
         setWeaknesses((prev) => ([...(prev ?? []), created]));
@@ -62,14 +94,13 @@ export const MenteeWeaknessSection = () => {
       return;
     }
 
-    const target = list.find((w) => w.id === id);
     const updated = await update.mutate({
       weaknessId: id,
       payload: {
         menteeId,
-        subject: target?.subject ?? (selectedSubject === 'ALL' ? 'KOREAN' : selectedSubject),
+        subject: resolvedSubject,
         title,
-        contentId: target?.contentId || undefined,
+        contentId,
       },
     });
 
@@ -183,7 +214,7 @@ export const MenteeWeaknessSection = () => {
             onSave={handleSave}
             onDelete={() => setIsAdding(false)}
           />
-        ) : (
+        ) : selectedSubject === 'ALL' ? null : (
           <AddWeaknessButton onClick={handleAddClick} />
         )}
       </VStack>

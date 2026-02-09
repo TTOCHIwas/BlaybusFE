@@ -1,7 +1,5 @@
 ﻿import { apiClient } from '@/shared/api/base';
 import type { MenteeProfileData } from '@/widgets/mentee-profile/model/types';
-import { USE_MOCK } from '@/shared/mocks/mockEnv';
-import { mockApi } from '@/shared/mocks/mockApi';
 import { asRecord, asString, asNumber, asOptionalString, pick } from '@/shared/api/parse';
 
 export type DashboardType = 'WEEK' | 'MONTH';
@@ -34,16 +32,12 @@ const normalizeDashboard = (raw: unknown): MenteeProfileData => {
 
 export const menteeDashboardApi = {
   getByMenteeId: async (menteeId: string, type: DashboardType = 'WEEK'): Promise<MenteeProfileData> => {
-    const data = USE_MOCK
-      ? await mockApi.menteeDashboard.getByMenteeId(menteeId, type)
-      : await apiClient.get(`/mentor/${menteeId}`, { params: { type } });
+    const data = await apiClient.get(`/mentor/${menteeId}`, { params: { type } });
     return normalizeDashboard(data);
   },
 
   getMy: async (type: DashboardType = 'WEEK'): Promise<MenteeProfileData> => {
-    const data = USE_MOCK
-      ? await mockApi.menteeDashboard.getMy(type)
-      : await apiClient.get('/mentee/me', { params: { type } });
+    const data = await apiClient.get('/mentee/me', { params: { type } });
     return normalizeDashboard(data);
   },
 };

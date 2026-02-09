@@ -15,7 +15,7 @@ interface Props {
   isEditing: boolean;
   onEditMode: () => void;
   onCancel: () => void;
-  onSave: (id: string, title: string, fileName?: string) => void;
+  onSave: (args: { id: string; title: string; file?: File | null; existingContentId?: string }) => void;
   onDelete: (id: string) => void;
 }
 
@@ -25,27 +25,31 @@ export const WeaknessItem = ({
 }: Props) => {
   const [title, setTitle] = useState(weakness.title);
   const [fileName, setFileName] = useState(weakness.fileName || '');
+  const [file, setFile] = useState<File | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleEditMode = () => {
     setTitle(weakness.title);
     setFileName(weakness.fileName || '');
+    setFile(null);
     onEditMode();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
+      setFile(file);
       setFileName(file.name);
 
       if (!isEditing) {
-        onSave(weakness.id, weakness.title, file.name);
+        onSave({ id: weakness.id, title: weakness.title, file, existingContentId: weakness.contentId });
       }
     }
   };
 
   const handleRemoveFile = () => {
+    setFile(null);
     setFileName('');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -55,7 +59,7 @@ export const WeaknessItem = ({
       alert('보완점 내용을 입력해주세요.');
       return;
     }
-    onSave(weakness.id, title, fileName);
+    onSave({ id: weakness.id, title, file, existingContentId: weakness.contentId });
   };
 
   return (

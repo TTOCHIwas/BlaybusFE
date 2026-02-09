@@ -1,4 +1,4 @@
-import { 
+﻿import { 
     Box, 
     Button, 
     Container, 
@@ -19,6 +19,7 @@ import { format, parse } from 'date-fns';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuthStore } from '@/shared/stores/authStore';
 import { ImageSlider, TaskDetailHeader } from '@/widgets/task-detail';
+import { ResourceSlider, StudyMaterial } from '@/widgets/task-detail/ResourceSlider';
 import { Subject } from '@/widgets/task-detail/TaskDetailHeader';
 import { useTaskDetail } from '@/features/task/model/useTaskDetail';
 import { taskApi } from '@/features/task/api/taskApi';
@@ -34,7 +35,7 @@ const formatTaskDate = (value?: string) => {
 
 
 const MentorTaskDetailPage = () => {
-    const { id } = useParams(); 
+    const { taskId } = useParams<{ taskId: string }>(); 
     const navigate = useNavigate();
     const { user } = useAuthStore();
     const toast = useToast(); 
@@ -43,8 +44,8 @@ const MentorTaskDetailPage = () => {
     const cancelRef = useRef<HTMLButtonElement>(null);
 
     const [isSaving, setIsSaving] = useState(false);
-    const { data, setData } = useTaskDetail(id);
-    const taskId = id ?? data?.id;
+    const { data, setData } = useTaskDetail(taskId);
+    const effectiveTaskId = taskId ?? data?.id;
 
     const submissionImages = data?.submission?.images ?? [];
     const submissionImageIds = data?.submission?.imageIds ?? [];
@@ -52,6 +53,26 @@ const MentorTaskDetailPage = () => {
         id: submissionImageIds[idx] ?? `img-${idx}`,
         imageUrl: url
     }));
+    const hasSubmission = Boolean(data?.submission);
+    const submissionStatus = hasSubmission ? '제출됨' : '미제출';
+
+    const studyMaterials: StudyMaterial[] = [];
+    if (data?.weakness?.file) {
+        studyMaterials.push({
+            id: 'weakness-file',
+            title: data.weakness.file.title,
+            url: data.weakness.file.url,
+            label: data.weakness.title,
+        });
+    }
+    if (data?.taskFile) {
+        studyMaterials.push({
+            id: 'task-file',
+            title: data.taskFile.title,
+            url: data.taskFile.url,
+            label: 'Task File',
+        });
+    }
 
     const taskDateLabel = formatTaskDate(data?.taskDate);
 
@@ -60,18 +81,22 @@ const MentorTaskDetailPage = () => {
         navigate(-1);
     };
 
+    const handleBackToList = () => {
+        navigate(-1);
+    };
+
     const handleSave = async () => {
         if (isSaving) return;
         setIsSaving(true);
 
         try {
-            if (!taskId) return;
-            await taskApi.confirmMentorTask(taskId);
+            if (!effectiveTaskId) return;
+            await taskApi.confirmMentorTask(effectiveTaskId);
             setData((prev) => (prev ? { ...prev, isMentorChecked: true } : prev));
 
             toast({
-                title: "저장되었습니다.",
-                description: "피드백이 성공적으로 반영되었습니다.",
+                title: "Saved.",
+                description: "Feedback confirmation saved.",
                 status: "success",
                 duration: 3000,
                 isClosable: true,
@@ -81,8 +106,8 @@ const MentorTaskDetailPage = () => {
         } catch (error) {
             console.error("Save failed:", error);
             toast({
-                title: "저장 실패",
-                description: "잠시 후 다시 시도해주세요.",
+                title: "Save failed",
+                description: "Please try again.",
                 status: "error",
                 duration: 3000,
                 isClosable: true,
@@ -104,64 +129,96 @@ const MentorTaskDetailPage = () => {
                         date={taskDateLabel}
                         isMentorChecked={Boolean(data?.isMentorChecked)}
                         title={data?.title ?? ''}
-                        supplement={data?.description ? data.description.replace('보완점: ', '') : ''} 
+                        supplement={data?.description ?? ''} 
+                        statusLabel="제출 상태"
+                        statusText={submissionStatus}
                     />
                 </Box>
 
-                {/* Submission Viewer Section */}
-                <Box>
-                    <Text fontSize="18px" fontWeight="bold" mb={6} color="#333333">학습 점검하기</Text>
-                    <ImageSlider 
-                        images={formattedImages} 
-                        taskId={taskId || 'temp-task-id'}
-                        currentUserId={user.id} 
-                        userRole={user.role}   
-                    />
-                </Box>
+                {hasSubmission ? (
+                    <>
+                        {/* Submission Viewer Section */}
+                        <Box>
+                            <Text fontSize="18px" fontWeight="bold" mb={6} color="#333333">제출물 검토</Text>
+                            <ImageSlider 
+                                images={formattedImages} 
+                                taskId={effectiveTaskId || 'temp-task-id'}
+                                currentUserId={user.id} 
+                                userRole={user.role}   
+                            />
+                        </Box>
 
-                {/* Mentee Comment Section */}
-                <Box pt={16}>
-                    <Text fontSize="16px" fontWeight="bold" mb={4} color="#333333">남긴 메모</Text>
-                    <Box
-                        p={6}
-                        bg="#F9FAFB"
-                        borderRadius="12px"
-                        minH="100px"
-                    >
-                        <Text color="#333333" fontSize="15px" lineHeight="1.6">
-                            {data?.submission?.memo ?? ''}
-                        </Text>
-                    </Box>
-                </Box>
+                        {/* Mentee Comment Section */}
+                        <Box pt={16}>
+                            <Text fontSize="16px" fontWeight="bold" mb={4} color="#333333">남긴 메모</Text>
+                            <Box
+                                p={6}
+                                bg="#F9FAFB"
+                                borderRadius="12px"
+                                minH="100px"
+                            >
+                                <Text color="#333333" fontSize="15px" lineHeight="1.6">
+                                    {data?.submission?.memo ?? ''}
+                                </Text>
+                            </Box>
+                        </Box>
 
-                {/* Footer Buttons */}
-                <Flex justify="flex-end" gap={3} pt={8} pb={10}>
-                    <Button
-                        variant="outline"
-                        onClick={onOpen}
-                        h="48px"
-                        px={8}
-                        borderColor="#E5E7EB"
-                        color="#666666"
-                        bg="white"
-                        _hover={{ bg: 'gray.50' }}
-                        isDisabled={isSaving}
-                    >
-                        취소
-                    </Button>
-                    <Button
-                        colorScheme="blue"
-                        bg="#3B82F6"
-                        h="48px"
-                        px={8}
-                        _hover={{ bg: 'blue.600' }}
-                        onClick={handleSave} 
-                        isLoading={isSaving} 
-                        loadingText="저장 중"
-                    >
-                        저장
-                    </Button>
-                </Flex>
+                        {/* Footer Buttons */}
+                        <Flex justify="flex-end" gap={3} pt={8} pb={10}>
+                            <Button
+                                variant="outline"
+                                onClick={onOpen}
+                                h="48px"
+                                px={8}
+                                borderColor="#E5E7EB"
+                                color="#666666"
+                                bg="white"
+                                _hover={{ bg: 'gray.50' }}
+                                isDisabled={isSaving}
+                            >
+                                취소
+                            </Button>
+                            <Button
+                                colorScheme="blue"
+                                bg="#3B82F6"
+                                h="48px"
+                                px={8}
+                                _hover={{ bg: 'blue.600' }}
+                                onClick={handleSave} 
+                                isLoading={isSaving} 
+                                loadingText="저장중..."
+                            >
+                                저장
+                            </Button>
+                        </Flex>
+                    </>
+                ) : (
+                    <>
+                        <Box>
+                            <Text fontSize="18px" fontWeight="bold" mb={6} color="#333333">학습자료</Text>
+
+                            {studyMaterials.length > 0 ? (
+                                <VStack spacing={8} align="stretch">
+                                    {studyMaterials.map((material) => (
+                                        <Box key={material.id}>
+                                            <ResourceSlider materials={[material]} />
+                                        </Box>
+                                    ))}
+                                </VStack>
+                            ) : (
+                                <Box py={10} textAlign="center" bg="gray.50" borderRadius="xl" color="gray.500">
+                                    등록된 학습 자료가 없습니다.
+                                </Box>
+                            )}
+                        </Box>
+
+                        <Flex justify="center" pt={8} pb={10}>
+                            <Button size="lg" w="200px" h="52px" onClick={handleBackToList}>
+                                목록으로
+                            </Button>
+                        </Flex>
+                    </>
+                )}
 
             </VStack>
 
@@ -174,12 +231,12 @@ const MentorTaskDetailPage = () => {
                 <AlertDialogOverlay>
                     <AlertDialogContent borderRadius="12px">
                         <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                            페이지를 나가시겠습니까?
+                            페이지에 남겠습니까?
                         </AlertDialogHeader>
 
                         <AlertDialogBody>
-                            작성 중인 내용은 저장되지 않습니다.<br />
-                            정말 나가시겠습니까?
+                            수정 사항이 저장되지 않습니다.<br />
+                            정말 나가겠습니까?
                         </AlertDialogBody>
 
                         <AlertDialogFooter>
@@ -198,3 +255,9 @@ const MentorTaskDetailPage = () => {
 };
 
 export default MentorTaskDetailPage;
+
+
+
+
+
+

@@ -1,13 +1,5 @@
 ﻿import { useRef, useState, useEffect } from 'react';
-import { 
-  Box, 
-  useToast, 
-  useBreakpointValue, 
-  Drawer, 
-  DrawerOverlay, 
-  DrawerContent, 
-  DrawerBody 
-} from '@chakra-ui/react';
+import { Box, useToast, useBreakpointValue } from '@chakra-ui/react';
 import { AnimatePresence } from 'framer-motion';
 import { useTaskFeedbackStore } from '@/shared/stores/taskFeedbackStore';
 import { calculatePercentPosition, getFeedbackPositionStyles } from '../model/feedbackUtils';
@@ -40,7 +32,6 @@ export const FeedbackOverlay = ({ taskId, imageId, currentUserId, userRole }: Fe
   
   const feedbacks = store.getFeedbacksForImage(imageId);
   const isCreating = !!store.pendingPosition;
-
   const isMobile = useBreakpointValue({ base: true, md: false }) ?? false;
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -94,6 +85,13 @@ export const FeedbackOverlay = ({ taskId, imageId, currentUserId, userRole }: Fe
   };
 
   const activeFeedbackData = feedbacks.find(fb => fb.id === store.activeFeedbackId);
+  const activeFeedbackPosition = activeFeedbackData
+    ? getFeedbackPositionStyles(activeFeedbackData.xPos, activeFeedbackData.yPos)
+    : null;
+  const feedbackAuthorName = activeFeedbackData?.mentorName ?? '멘토';
+  const normalizeAuthorRole = (role?: string): UserRole => (
+    role === 'MENTOR' || role === 'MENTEE' || role === 'WITH_DRAW' ? role : 'MENTEE'
+  );
 
   return (
     <>
@@ -120,7 +118,7 @@ export const FeedbackOverlay = ({ taskId, imageId, currentUserId, userRole }: Fe
                 containerRef={containerRef}
                 isDraggable={userRole === "MENTOR" && fb.mentorId === currentUserId && !isCreating}
                 isDimmed={isDimmed}
-                isHidden={isActive && !isMobile}
+                isHidden={isActive}
                 onMouseEnter={() => !isCreating && setHoveredPinId(fb.id)}
                 onMouseLeave={() => setHoveredPinId(null)}
                 onPositionChange={handlePositionChange}
@@ -135,55 +133,97 @@ export const FeedbackOverlay = ({ taskId, imageId, currentUserId, userRole }: Fe
           })}
         </AnimatePresence>
         
-        {!isMobile && activeFeedbackData && (
-             <FeedbackCard
-                key={activeFeedbackData.id}
-                feedback={{ ...activeFeedbackData, authorName: '멘토', authorProfileUrl: null }}
-                answers={store.getAnswersForFeedback(activeFeedbackData.id).map(a => ({...a, authorName: 'User', authorRole: "MENTEE", authorProfileUrl: null}))}
-                currentUserId={currentUserId}
-                userRole={userRole}
-                onClose={() => {
-                  if (DEBUG_FEEDBACK) {
-                    console.debug('[feedback-overlay] close', {
-                      imageId,
-                      activeFeedbackId: store.activeFeedbackId,
-                      feedbackCount: feedbacks.length,
-                    });
+        {activeFeedbackData && activeFeedbackPosition && (
+          <Box
+            position="absolute"
+            zIndex={200}
+            display={isMobile ? 'flex' : undefined}
+            justifyContent={isMobile ? 'center' : undefined}
+            style={
+              isMobile
+                ? {
+                    left: '12px',
+                    right: '12px',
+                    top: activeFeedbackData.yPos > 50 ? undefined : '12px',
+                    bottom: activeFeedbackData.yPos > 50 ? '12px' : undefined,
                   }
-                  store.setActiveFeedback(null);
-                }}
-                onUpdateFeedback={async (c, payload) => {
-                  const updated = await feedbackApi.updateFeedback(activeFeedbackData.id, { content: c, imageUrl: payload.imageUrl });
-                  if (!updated) return;
-                  store.updateFeedback(activeFeedbackData.id, { content: updated.content, imageUrl: updated.imageUrl });
-                }}
-                onDeleteFeedback={async () => { 
-                  await feedbackApi.deleteFeedback(activeFeedbackData.id);
-                  store.removeFeedback(activeFeedbackData.id); 
-                }}
-                onAddAnswer={async (c) => {
-                  const created = await feedbackApi.createComment(activeFeedbackData.id, c);
-                  store.addAnswer(created);
-                }}
-                onUpdateAnswer={async (id, c) => {
-                  const updated = await feedbackApi.updateComment(activeFeedbackData.id, id, c);
-                  if (!updated) return;
-                  store.updateAnswer(id, updated.comment);
-                }}
-                onDeleteAnswer={async (id) => {
-                  await feedbackApi.deleteComment(activeFeedbackData.id, id);
-                  store.removeAnswer(id);
-                }}
-             />
+                : { ...activeFeedbackPosition.positionStyles, ...activeFeedbackPosition.marginStyles }
+            }
+          >
+            <FeedbackCard
+              key={activeFeedbackData.id}
+              feedback={{ ...activeFeedbackData, authorName: feedbackAuthorName, authorProfileUrl: null }}
+              answers={store
+                .getAnswersForFeedback(activeFeedbackData.id)
+                .map((a) => ({
+                  ...a,
+                  authorName: a.authorName ?? 'User',
+                  authorRole: normalizeAuthorRole(a.authorRole),
+                  authorProfileUrl: null,
+                }))}
+              currentUserId={currentUserId}
+              userRole={userRole}
+              transformOrigin={activeFeedbackPosition.transformOrigin}
+              onClose={() => {
+                if (DEBUG_FEEDBACK) {
+                  console.debug('[feedback-overlay] close', {
+                    imageId,
+                    activeFeedbackId: store.activeFeedbackId,
+                    feedbackCount: feedbacks.length,
+                  });
+                }
+                store.setActiveFeedback(null);
+              }}
+              onUpdateFeedback={async (c, payload) => {
+                const updated = await feedbackApi.updateFeedback(activeFeedbackData.id, {
+                  content: c,
+                  imageUrl: payload.imageUrl,
+                });
+                if (!updated) return;
+                store.updateFeedback(activeFeedbackData.id, { content: updated.content, imageUrl: updated.imageUrl });
+              }}
+              onDeleteFeedback={async () => {
+                await feedbackApi.deleteFeedback(activeFeedbackData.id);
+                store.removeFeedback(activeFeedbackData.id);
+              }}
+              onAddAnswer={async (c) => {
+                const created = await feedbackApi.createComment(activeFeedbackData.id, c);
+                store.addAnswer(created);
+              }}
+              onUpdateAnswer={async (id, c) => {
+                const updated = await feedbackApi.updateComment(activeFeedbackData.id, id, c);
+                if (!updated) return;
+                store.updateAnswer(id, updated.comment);
+              }}
+              onDeleteAnswer={async (id) => {
+                await feedbackApi.deleteComment(activeFeedbackData.id, id);
+                store.removeAnswer(id);
+              }}
+            />
+          </Box>
         )}
 
         <AnimatePresence>
           {store.pendingPosition && (
-            <Box 
-              position="absolute" 
+            <Box
+              position="absolute"
               zIndex={200}
               onClick={(e) => e.stopPropagation()}
-              style={{ ...getFeedbackPositionStyles(store.pendingPosition.x, store.pendingPosition.y).positionStyles }}
+              display={isMobile ? 'flex' : undefined}
+              justifyContent={isMobile ? 'center' : undefined}
+              style={
+                isMobile
+                  ? {
+                      left: '12px',
+                      right: '12px',
+                      top: store.pendingPosition.y > 50 ? undefined : '12px',
+                      bottom: store.pendingPosition.y > 50 ? '12px' : undefined,
+                    }
+                  : {
+                      ...getFeedbackPositionStyles(store.pendingPosition.x, store.pendingPosition.y)
+                        .positionStyles,
+                    }
+              }
             >
               <FeedbackInputForm
                 onSave={handleCreateFeedback}
@@ -193,61 +233,6 @@ export const FeedbackOverlay = ({ taskId, imageId, currentUserId, userRole }: Fe
           )}
         </AnimatePresence>
       </Box>
-
-      <Drawer
-        isOpen={isMobile && !!activeFeedbackData}
-        placement="bottom"
-        onClose={() => store.setActiveFeedback(null)}
-        trapFocus={false} 
-        blockScrollOnMount={false} 
-      >
-        <DrawerOverlay bg="blackAlpha.300" />
-        <DrawerContent borderTopRadius="20px" maxH="80vh">
-          <DrawerBody p={0}>
-             {activeFeedbackData && (
-                 <FeedbackCard
-                    feedback={{ ...activeFeedbackData, authorName: '멘토', authorProfileUrl: null }}
-                    answers={store.getAnswersForFeedback(activeFeedbackData.id).map(a => ({...a, authorName: 'User', authorRole: "MENTEE", authorProfileUrl: null}))}
-                    currentUserId={currentUserId}
-                    userRole={userRole}
-                    onClose={() => {
-                      if (DEBUG_FEEDBACK) {
-                        console.debug('[feedback-overlay] close', {
-                          imageId,
-                          activeFeedbackId: store.activeFeedbackId,
-                          feedbackCount: feedbacks.length,
-                        });
-                      }
-                      store.setActiveFeedback(null);
-                    }}
-                    onUpdateFeedback={async (c, payload) => {
-                      const updated = await feedbackApi.updateFeedback(activeFeedbackData.id, { content: c, imageUrl: payload.imageUrl });
-                      if (!updated) return;
-                      store.updateFeedback(activeFeedbackData.id, { content: updated.content, imageUrl: updated.imageUrl });
-                    }}
-                    onDeleteFeedback={async () => { 
-                      await feedbackApi.deleteFeedback(activeFeedbackData.id);
-                      store.removeFeedback(activeFeedbackData.id); 
-                    }}
-                    onAddAnswer={async (c) => {
-                      const created = await feedbackApi.createComment(activeFeedbackData.id, c);
-                      store.addAnswer(created);
-                    }}
-                    onUpdateAnswer={async (id, c) => {
-                      const updated = await feedbackApi.updateComment(activeFeedbackData.id, id, c);
-                      if (!updated) return;
-                      store.updateAnswer(id, updated.comment);
-                    }}
-                    onDeleteAnswer={async (id) => {
-                      await feedbackApi.deleteComment(activeFeedbackData.id, id);
-                      store.removeAnswer(id);
-                    }}
-                    isMobileView={true} 
-                 />
-             )}
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
     </>
   );
 };

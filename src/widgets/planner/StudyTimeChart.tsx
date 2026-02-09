@@ -33,7 +33,7 @@ export const StudyTimeChart = () => {
     <Box p={4} borderRadius="lg" boxShadow="sm">
       <Flex mx={2} direction={{base:"column", md:"row"}} gap={{base:4, md:'none'}} align={{base:"flex-start",md:"center"}} justify="space-between" mb={4}>
         <Flex align="center" gap={2}>
-          <Heading size="md" color={"#373E56"}>공부시간 기록</Heading>
+          <Heading size="md" whiteSpace={'nowrap'} color={"#373E56"}>공부시간 기록</Heading>
         </Flex>
         <Flex align={'center'} gap={1}>
           <TimerIcon/>
