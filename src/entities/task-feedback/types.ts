@@ -7,6 +7,7 @@ export interface TaskFeedback {
   yPos: number;              
   taskId: string;
   mentorId: string;
+  mentorName?: string;
   imageId: string;          
 }
 
@@ -23,6 +24,7 @@ export const mapTaskFeedbackFromApi = (raw: unknown): TaskFeedback => {
     yPos: asNumber(pick(obj, ['yPos', 'y_pos']), 'TaskFeedback.yPos'),
     taskId: asOptionalString(pick(obj, ['taskId', 'task_id']), 'TaskFeedback.taskId') ?? '',
     mentorId: asOptionalString(pick(obj, ['mentorId', 'mentor_id']), 'TaskFeedback.mentorId') ?? '',
+    mentorName: asOptionalString(pick(obj, ['mentorName', 'mentor_name']), 'TaskFeedback.mentorName'),
     imageId: asOptionalString(pick(obj, ['imageId', 'image_id']), 'TaskFeedback.imageId') ?? '',
   };
 };

@@ -1,7 +1,5 @@
 ﻿import { User, mapUserFromApi } from '@/entities/user/types';
 import { apiClient, rawClient } from '@/shared/api/base';
-import { USE_MOCK } from '@/shared/mocks/mockEnv';
-import { mockApi } from '@/shared/mocks/mockApi';
 import { isRecord } from '@/shared/api/parse';
 
 export interface LoginRequest {
@@ -41,10 +39,6 @@ const extractToken = (res: RawResponse | null | undefined): string | null => {
 
 export const authApi = {
   login: async (req: LoginRequest): Promise<LoginResponse> => {
-    if (USE_MOCK) {
-      return mockApi.auth.login(req);
-    }
-
     const response = await rawClient.post('/auth/login', req);
     const token = extractToken(response);
 

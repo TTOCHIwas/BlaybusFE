@@ -1,11 +1,9 @@
-import { apiClient } from '@/shared/api/base';
+﻿import { apiClient } from '@/shared/api/base';
 import type { TaskFeedback } from '@/entities/task-feedback/types';
 import type { Answer } from '@/entities/answer/types';
 import { mapTaskFeedbackFromApi } from '@/entities/task-feedback/types';
 import { mapAnswerFromApi } from '@/entities/answer/types';
 import type { FeedbackWithTask } from '../model/types';
-import { USE_MOCK } from '@/shared/mocks/mockEnv';
-import { mockApi } from '@/shared/mocks/mockApi';
 import { asArray, asOptionalNumber, asOptionalString, asRecord, isRecord, pick } from '@/shared/api/parse';
 import type { Subject } from '@/shared/constants/enums';
 
@@ -57,7 +55,6 @@ const normalizeFeedbackWithTask = (raw: unknown): FeedbackWithTask => {
 
 export const feedbackApi = {
   getFeedbacksByImageId: async (imageId: string): Promise<TaskFeedback[]> => {
-    if (USE_MOCK) return mockApi.feedback.getFeedbacksByImageId(imageId);
     try {
       const data = await apiClient.get(`/images/${imageId}/feedback`);
       const list = Array.isArray(data)
@@ -73,7 +70,6 @@ export const feedbackApi = {
   },
 
   getYesterdayFeedbacks: async (): Promise<FeedbackWithTask[]> => {
-    if (USE_MOCK) return mockApi.feedback.getYesterdayFeedbacks();
     const data = await apiClient.get('/feedbacks/yesterday');
     const list = Array.isArray(data)
       ? data
@@ -90,7 +86,6 @@ export const feedbackApi = {
     startDate?: string;
     endDate?: string;
   }): Promise<FeedbackWithTask[]> => {
-    if (USE_MOCK) return mockApi.feedback.getFeedbackHistory();
     const query: Record<string, string | number> = { menteeId: params.menteeId };
     if (params.year) query.year = params.year;
     if (params.month) query.month = params.month;
@@ -115,7 +110,6 @@ export const feedbackApi = {
       file?: File | null;
     }
   ): Promise<TaskFeedback> => {
-    if (USE_MOCK) return mockApi.feedback.createFeedback(imageId, payload);
     const form = new FormData();
     const xPos = payload.xPos > 1 ? payload.xPos / 100 : payload.xPos;
     const yPos = payload.yPos > 1 ? payload.yPos / 100 : payload.yPos;
@@ -131,7 +125,6 @@ export const feedbackApi = {
   },
 
   updateFeedback: async (feedbackId: string, payload: { content?: string; imageUrl?: string | null; xPos?: number; yPos?: number; }) => {
-    if (USE_MOCK) return mockApi.feedback.updateFeedback(feedbackId, payload);
     const normalized = {
       ...payload,
       xPos: payload.xPos === undefined ? undefined : (payload.xPos > 1 ? payload.xPos / 100 : payload.xPos),
@@ -142,12 +135,10 @@ export const feedbackApi = {
   },
 
   deleteFeedback: async (feedbackId: string): Promise<void> => {
-    if (USE_MOCK) return mockApi.feedback.deleteFeedback(feedbackId);
     await apiClient.delete(`/feedback/${feedbackId}`);
   },
 
   getComments: async (feedbackId: string): Promise<Answer[]> => {
-    if (USE_MOCK) return mockApi.feedback.getComments(feedbackId);
     const data = await apiClient.get(`/feedback/${feedbackId}/comments`);
     const list = Array.isArray(data)
       ? data
@@ -156,19 +147,16 @@ export const feedbackApi = {
   },
 
   createComment: async (feedbackId: string, comment: string): Promise<Answer> => {
-    if (USE_MOCK) return mockApi.feedback.createComment(feedbackId, comment);
     const data = await apiClient.post(`/feedback/${feedbackId}/comments`, { comment });
     return normalizeAnswer(data, { feedbackId });
   },
 
   updateComment: async (_feedbackId: string, commentId: string, comment: string): Promise<Answer | null> => {
-    if (USE_MOCK) return mockApi.feedback.updateComment(_feedbackId, commentId, comment);
     const data = await apiClient.put(`/feedback/comments/${commentId}`, { comment });
     return normalizeAnswer(data, { feedbackId: _feedbackId });
   },
 
   deleteComment: async (_feedbackId: string, commentId: string): Promise<void> => {
-    if (USE_MOCK) return mockApi.feedback.deleteComment(_feedbackId, commentId);
     await apiClient.delete(`/feedback/comments/${commentId}`);
   },
 };

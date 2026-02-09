@@ -49,7 +49,7 @@ export const MenteeCard = ({ mentee }: Props) => {
             fontWeight="600"
             lineHeight="normal"
           >
-            {mentee.name} 멘티
+            {mentee.name}님
           </Text>
 
           <VStack
@@ -59,9 +59,9 @@ export const MenteeCard = ({ mentee }: Props) => {
             gap="8px"
             alignSelf="stretch"
           >
-            <AchievementRow label="국어" value={mentee.achievement.korean} colorScheme="#53A8FE" />
-            <AchievementRow label="영어" value={mentee.achievement.english} colorScheme="#35CE9D" />
-            <AchievementRow label="수학" value={mentee.achievement.math} colorScheme="#A16AFF" />
+            <AchievementRow label="국" value={mentee.achievement.korean} colorScheme="#53A8FE" />
+            <AchievementRow label="영" value={mentee.achievement.english} colorScheme="#35CE9D" />
+            <AchievementRow label="수" value={mentee.achievement.math} colorScheme="#A16AFF" />
           </VStack>
         </VStack>
       </Flex>

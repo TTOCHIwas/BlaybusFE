@@ -106,14 +106,19 @@ export const NotificationCommentIcon = (props: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-export const BasicAvartarIcon = (props: SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="87" height="87" viewBox="0 0 87 87" fill="none" {...props}>
+interface BasicAvartarIconProps extends SVGProps<SVGSVGElement> {
+  size?: number | string;  
+}
+
+export const BasicAvartarIcon = ({ size = 18, ...props }: BasicAvartarIconProps) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 87 87" fill="none" {...props}>
     <circle cx="43.4818" cy="43.4818" r="43.4818" fill="#AAD4FF"/>
     <path d="M46.9756 40.9778L59.1982 28.7561L64.21 33.7678L52.0371 45.9417H71.7217V53.0295H15.2402V45.9417H34.9258L22.75 33.7668L27.7617 28.7551L39.9814 40.9739V23.7131H46.9756V40.9778Z" fill="white"/>
     <circle cx="36.625" cy="60.2683" r="3.6943" fill="white"/>
     <circle cx="50.4795" cy="60.2683" r="3.6943" fill="white"/>
     </svg>
 );
+
 
 export const CommentIcon = (props: SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 10 10" fill="none" {...props}>
@@ -122,11 +127,11 @@ export const CommentIcon = (props: SVGProps<SVGSVGElement>) => (
 );
 
 
-interface MenteeCommentIconProps extends SVGProps<SVGSVGElement> {
+interface CommentAvartarIconProps extends SVGProps<SVGSVGElement> {
   size?: number | string;  
 }
 
-export const CommentAvartarIcon = ({ size = 18, ...props }: MenteeCommentIconProps) => (
+export const CommentAvartarIcon = ({ size = 18, ...props }: CommentAvartarIconProps) => (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 18 18" fill="none" {...props}>
     <path d="M17.8075 8.90375C17.8075 13.8212 13.8212 17.8075 8.90375 17.8075C3.98634 17.8075 0 13.8212 0 8.90375C0 3.98634 3.98634 0 8.90375 0C13.8212 0 17.8075 3.98634 17.8075 8.90375Z" fill="currentColor"/>
     <path d="M9.61647 8.39141L12.1214 5.88751L13.1477 6.91387L10.6546 9.40704H14.6848V10.8582H3.1194V9.40704H7.15163L4.65846 6.91387L5.68483 5.88751L8.18385 8.38653V4.85528H9.61647V8.39141Z" fill="white"/>
@@ -136,10 +141,20 @@ export const CommentAvartarIcon = ({ size = 18, ...props }: MenteeCommentIconPro
 );
 
 
-export const LogoIcon = (props: SVGProps<SVGSVGElement>) => (
-<svg xmlns="http://www.w3.org/2000/svg" width="146" height="136" viewBox="0 0 146 136" fill="none" {...props}>
+// export const LogoIcon = (props: SVGProps<SVGSVGElement>) => (
+// <svg xmlns="http://www.w3.org/2000/svg" width="146" height="136" viewBox="0 0 146 136" fill="none" {...props}>
+//   <path d="M95.0215 75.6387H94.9346L126.346 107.05L113.415 119.98L82.0039 88.5693V135.382H63.7178V88.5684L32.3066 119.98L19.376 107.05L50.7871 75.6387H50.7002L72.8604 53.4775L95.0215 75.6387ZM82.0039 44.4209L113.415 13.0107L126.346 25.9414L94.9346 57.3525H145.723V75.6387H100.261L74.1709 49.5488L72.8613 48.2383L71.5518 49.5488L45.4619 75.6387H0V57.3525H50.7871L19.376 25.9414L32.3066 13.0107L63.7178 44.4219V0H82.0039V44.4209Z" fill="#52A8FE"/>
+// </svg>
+// );
+
+
+interface LogoIconProps extends SVGProps<SVGSVGElement> {
+  size?: number | string;  
+}
+
+export const LogoIcon = ({ size = 18, ...props }: LogoIconProps) => (
+<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 146 136" fill="none" {...props}>
   <path d="M95.0215 75.6387H94.9346L126.346 107.05L113.415 119.98L82.0039 88.5693V135.382H63.7178V88.5684L32.3066 119.98L19.376 107.05L50.7871 75.6387H50.7002L72.8604 53.4775L95.0215 75.6387ZM82.0039 44.4209L113.415 13.0107L126.346 25.9414L94.9346 57.3525H145.723V75.6387H100.261L74.1709 49.5488L72.8613 48.2383L71.5518 49.5488L45.4619 75.6387H0V57.3525H50.7871L19.376 25.9414L32.3066 13.0107L63.7178 44.4219V0H82.0039V44.4209Z" fill="#52A8FE"/>
 </svg>
 );
-
 

@@ -7,6 +7,7 @@ interface Props {
   displayRange: string;
   status: 'PAST' | 'CURRENT' | 'FUTURE';
   hasReport: boolean;
+  isMentor?: boolean;
   onClick: () => void;
 }
 
@@ -14,9 +15,14 @@ export const WeeklyReportItem = ({
   weekNumber,
   displayRange,
   status,
+  hasReport,
+  isMentor = false,
   onClick,
 }: Props) => {
   const isFuture = status === 'FUTURE';
+  const isCurrent = status === 'CURRENT';
+  const isDisabled = isMentor ? isFuture : isFuture || !hasReport;
+  const isHighlighted = isMentor ? isCurrent : isCurrent && hasReport;
 
   return (
     <Flex
@@ -26,11 +32,11 @@ export const WeeklyReportItem = ({
       borderRadius="7"
       transition="all 0.2s"
       role="group"
-      cursor={isFuture ? 'not-allowed' : 'pointer'}
-      onClick={isFuture ? undefined : onClick}
-      bg={isFuture ? 'none' : '#EDF3FF'}
-      color={isFuture ? '#939497ff' : '#373E56'}
-      _hover={!isFuture ? {
+      cursor={isDisabled ? 'not-allowed' : 'pointer'}
+      onClick={isDisabled ? undefined : onClick}
+      bg={isDisabled ? 'none' : isHighlighted ? '#DCEAFF' : '#EDF3FF'}
+      color={isDisabled ? '#939497ff' : '#373E56'}
+      _hover={!isDisabled ? {
         bg: 'gray.100',
       } : undefined}
     >
@@ -48,7 +54,7 @@ export const WeeklyReportItem = ({
       </Flex>
 
 
-        {!isFuture && (
+        {!isDisabled && (
           <Icon
             as={ChevronRightIcon}
             w={5} h={5}

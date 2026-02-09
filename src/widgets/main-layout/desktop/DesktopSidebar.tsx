@@ -1,6 +1,7 @@
-import { Box, VStack, HStack, Text, Icon } from '@chakra-ui/react';
+import { Box, VStack, HStack, Text, Icon, IconButton, Flex } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { SeolStudyLogo } from '@/shared/ui/SeolStudyLogo';
+import { HamburgerIcon } from '@chakra-ui/icons';
 import { useAuthStore } from '@/shared/stores/authStore';
 import { SidebarMenuItem } from './components/SidebarMenuItem';
 import { MenteeListToggle } from './components/MenteeListToggle';
@@ -8,20 +9,17 @@ import { MenteeNavItem } from './components/MenteeMenuItem';
 import { getNavItems } from '../navConfig';
 import { FiLogOut } from 'react-icons/fi';
 import { mentoringApi } from '@/features/mentoring/api/mentoringApi';
-
-// [추가 1] 페이지 이동을 위한 훅 import
 import { useNavigate } from 'react-router-dom';
 
 interface Props {
   isCollapsed: boolean;
+  onToggleSidebar: () => void;
 }
 
-export const DesktopSidebar = ({ isCollapsed }: Props) => {
+export const DesktopSidebar = ({ isCollapsed, onToggleSidebar }: Props) => {
   const { user, logout } = useAuthStore();
   const role = user?.role;
   const [mentees, setMentees] = useState<MenteeNavItem[]>([]);
-
-  // [추가 2] navigate 함수 생성
   const navigate = useNavigate();
 
   const menteeNavItems = getNavItems('MENTEE');
@@ -46,8 +44,8 @@ export const DesktopSidebar = ({ isCollapsed }: Props) => {
 
   const handleLogout = () => {
     if (confirm('정말 로그아웃 하시겠습니까?')) {
-      logout(); 
-      navigate('/login'); 
+      logout();
+      navigate('/login');
     }
   };
 
@@ -78,13 +76,36 @@ export const DesktopSidebar = ({ isCollapsed }: Props) => {
         }}
       >
         <VStack spacing={8} align="stretch" p={2} mt={8}>
-          <Box h="64px" display="flex" alignItems="center" justifyContent="center" mb={4}>
+          <Flex
+            h="64px"
+            alignItems="center"
+            justifyContent={isCollapsed ? 'center' : 'space-between'}
+            px={isCollapsed ? 0 : 4}
+            mb={4}
+          >
             {isCollapsed ? (
-              <SeolStudyLogo w="40px" h="auto" />
+              <IconButton
+                icon={<HamburgerIcon w={5} h={5} />}
+                aria-label="Expand Sidebar"
+                onClick={onToggleSidebar}
+                variant="ghost"
+                _hover={{ bg: 'gray.100' }}
+              />
             ) : (
-              <SeolStudyLogo w="140px" h="auto" />
+              <>
+                <SeolStudyLogo w="130px" h="auto" />
+                <IconButton
+                  icon={<HamburgerIcon w={5} h={5} />}
+                  aria-label="Collapse Sidebar"
+                  onClick={onToggleSidebar}
+                  variant="ghost"
+                  size="sm"
+                  color="gray.400"
+                  _hover={{ bg: 'gray.100', color: 'gray.600' }}
+                />
+              </>
             )}
-          </Box>
+          </Flex>
 
           {role === 'MENTOR' && (
             <>
@@ -93,7 +114,7 @@ export const DesktopSidebar = ({ isCollapsed }: Props) => {
                   key={item.path}
                   label={item.label}
                   path={item.path}
-                  icon={<item.icon width={24} height={24} />}
+                  icon={<item.icon w={4} h={4} />}
                   isCollapsed={isCollapsed}
                 />
               ))}
@@ -108,7 +129,7 @@ export const DesktopSidebar = ({ isCollapsed }: Props) => {
                   key={item.path}
                   label={item.label}
                   path={item.path}
-                  icon={<item.icon width={24} height={24}  />}
+                  icon={<item.icon w={4} h={4} />}
                   isCollapsed={isCollapsed}
                 />
               ))}
@@ -128,11 +149,7 @@ export const DesktopSidebar = ({ isCollapsed }: Props) => {
           cursor="pointer"
           color="gray.500"
           transition="all 0.2s"
-          _hover={{
-            bg: 'red.50',
-            color: 'red.500',
-            transform: 'translateY(-1px)'
-          }}
+          _hover={{ bg: 'red.50', color: 'red.500' }}
           spacing={3}
         >
           <Icon as={FiLogOut} w={5} h={5} />

@@ -29,6 +29,7 @@ export const WeeklyReportList = ({ externalDate, onItemClick }: WeeklyReportList
   const isControlled = !!externalDate; 
 
   const queryMenteeId = user?.role === 'MENTOR' ? menteeId : user?.id;
+  const isMentor = user?.role === 'MENTOR';
 
   useEffect(() => {
     const run = async () => {
@@ -222,6 +223,7 @@ export const WeeklyReportList = ({ externalDate, onItemClick }: WeeklyReportList
                 displayRange={week.displayRange}
                 status={status}
                 hasReport={hasReport}
+                isMentor={isMentor}
                 onClick={() => handleClick(week.startDate, week.endDate)}
               />
             );

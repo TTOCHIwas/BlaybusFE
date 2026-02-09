@@ -3,7 +3,7 @@ import { Box, Text } from '@chakra-ui/react';
 import { motion, PanInfo, useAnimation } from 'framer-motion';
 import { TaskFeedback } from '@/entities/task-feedback/types';
 import { extractPreviewText, getPinPositionStyles } from '../model/feedbackUtils';
-
+import { CommentAvartarIcon } from '@/shared/ui/icons';
 interface FeedbackPinProps {
   feedback: TaskFeedback;
   containerRef: RefObject<HTMLDivElement | null>;
@@ -112,29 +112,28 @@ export const FeedbackPin = ({
         style={visualStyle}
         bg="white"
         borderRadius="12px"
-        boxShadow={isDimmed ? "none" : "0px 4px 12px rgba(0, 0, 0, 0.15)"} 
+        boxShadow={isDimmed ? "none" : "0px 4px 12px rgba(0, 0, 0, 0.15)"}
         border="1px solid"
         borderColor="gray.100"
         transform={isDimmed ? 'scale(0.95)' : 'scale(1)'}
         transition="transform 0.2s"
       >
-        <Box 
-          px={3} 
-          py={2} 
-          display="flex" 
-          alignItems="center" 
-          gap={2} 
-          maxW="200px"
-          flexDirection={flexDirection} 
+        <Box
+          px={{ base: 2, md: 3 }}
+          py={{ base: 1.5, md: 2 }}
+          display="flex"
+          alignItems="center"
+          gap={{ base: 1.5, md: 2 }}
+          maxW={{ base: '140px', md: '200px' }}
+          flexDirection={flexDirection}
           userSelect="none"
         >
-          <Box color={isDimmed ? "gray.400" : "blue.500"} minW="16px" transition="color 0.2s">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-            </svg>
+          <Box color={isDimmed ? "gray.400" : "blue.500"} minW={{ base: '12px', md: '16px' }} transition="color 0.2s">
+            <Box display={{base:'none', md:'flex'}}><CommentAvartarIcon size={38} color="#53A8FE" /></Box>
+            <Box display={{base:'flex', md:'none'}}><CommentAvartarIcon size={18} color="#53A8FE" /></Box>
           </Box>
 
-          <Text fontSize="xs" fontWeight="bold" color="gray.800" noOfLines={1}>
+          <Text fontSize={{ base: '10px', md: 'xs' }} fontWeight="bold" color="gray.800" noOfLines={1}>
             {previewText}
           </Text>
         </Box>

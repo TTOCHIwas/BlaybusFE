@@ -1,8 +1,7 @@
-import { apiClient } from '@/shared/api/base';
+﻿import { apiClient } from '@/shared/api/base';
 import type { ZoomFeedbackData, ZoomFeedbackListItem } from '../model/types';
-import { USE_MOCK } from '@/shared/mocks/mockEnv';
-import { mockApi } from '@/shared/mocks/mockApi';
 import { asArray, asOptionalString, asRecord, asString, isRecord, pick } from '@/shared/api/parse';
+import { useAuthStore } from '@/shared/stores/authStore';
 
 const normalizeDetail = (raw: unknown): ZoomFeedbackData => {
   if (typeof raw === 'number' || typeof raw === 'string') {
@@ -64,7 +63,6 @@ const normalizeListItem = (raw: unknown): ZoomFeedbackListItem => {
 
 export const zoomFeedbackApi = {
   list: async (params?: { menteeId?: string }): Promise<ZoomFeedbackListItem[]> => {
-    if (USE_MOCK) return mockApi.zoom.list();
     const data = params?.menteeId
       ? await apiClient.get(`/mentor/list/${params.menteeId}`)
       : await apiClient.get('/mentee/list');
@@ -75,7 +73,15 @@ export const zoomFeedbackApi = {
   },
 
   getById: async (zoomId: string): Promise<ZoomFeedbackData> => {
-    if (USE_MOCK) return mockApi.zoom.getById(zoomId);
+    const role = useAuthStore.getState().user?.role;
+    if (role === 'MENTEE') {
+      const data = await apiClient.get(`/mentee/zoom-feedback/${zoomId}`);
+      return normalizeDetail(data);
+    }
+    if (role === 'MENTOR') {
+      const data = await apiClient.get(`/mentor/zoom-feedback/${zoomId}`);
+      return normalizeDetail(data);
+    }
     try {
       const data = await apiClient.get(`/mentor/zoom-feedback/${zoomId}`);
       return normalizeDetail(data);
@@ -86,7 +92,6 @@ export const zoomFeedbackApi = {
   },
 
   create: async (payload: { menteeId?: string } & ZoomFeedbackData): Promise<ZoomFeedbackData> => {
-    if (USE_MOCK) return mockApi.zoom.create(payload);
     if (!payload.menteeId) throw new Error('menteeId is required');
     const data = await apiClient.post(`/mentor/zoom-feedback/${payload.menteeId}`, {
       title: payload.title ?? '',
@@ -101,7 +106,6 @@ export const zoomFeedbackApi = {
   },
 
   update: async (zoomId: string, payload: ZoomFeedbackData): Promise<ZoomFeedbackData> => {
-    if (USE_MOCK) return mockApi.zoom.update(zoomId, payload);
     const data = await apiClient.put(`/zoom-feedback/${zoomId}`, {
       title: payload.title ?? '',
       memo: payload.memo,
@@ -115,7 +119,6 @@ export const zoomFeedbackApi = {
   },
 
   remove: async (zoomId: string): Promise<void> => {
-    if (USE_MOCK) return mockApi.zoom.remove(zoomId);
     await apiClient.delete(`/mentor/zoom-feedback/${zoomId}`);
   },
 };

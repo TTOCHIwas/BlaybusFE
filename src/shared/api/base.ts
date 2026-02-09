@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import type { ApiError, ApiResponse } from './types';
-import { getAuthToken } from '@/shared/stores/authStore';
+import { getAuthToken, logoutAndClear } from '@/shared/stores/authStore';
 import { isRecord } from './parse';
 
 const baseURL = import.meta.env.VITE_API_URL;
@@ -41,6 +41,10 @@ const unwrapResponse = (res: AxiosResponse) => {
 apiClient.interceptors.response.use(
   (res) => unwrapResponse(res) as any,
   (err: AxiosError<unknown>) => {
+    const status = err.response?.status;
+    if (status === 401 || status === 403) {
+      logoutAndClear();
+    }
     const data = err.response?.data;
 
     // CustomException shape: { status, message } or { code, message }
@@ -69,7 +73,7 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject({
-      code: 'NETWORK_ERROR',
+      code: status ? String(status) : 'NETWORK_ERROR',
       message: 'Network error',
     } as ApiError);
   }

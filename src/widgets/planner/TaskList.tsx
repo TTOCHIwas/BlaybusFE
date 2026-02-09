@@ -1,11 +1,10 @@
-import { VStack, Text, Box } from '@chakra-ui/react';
+﻿import { VStack, Text, Box } from '@chakra-ui/react';
 import { usePlannerStore } from '@/shared/stores/plannerStore';
 import { TaskItem } from '@/features/task/ui/TaskItem';
 import { TaskAddForm } from '@/features/task/ui/TaskAddForm';
 import { useNavigate } from 'react-router-dom';
 import { Task } from '@/entities/task/types';
 import { canAddTask, canUseTimer } from '@/shared/lib/date';
-import { isBefore, startOfDay } from 'date-fns';
 import { useAuthStore } from '@/shared/stores/authStore';
 import { taskApi } from '@/features/task/api/taskApi';
 import type { Subject } from '@/shared/constants/enums';
@@ -19,14 +18,7 @@ export const TaskList = () => {
   const isTimerEnabled = canUseTimer(selectedDate);
 
   const handleTaskClick = (taskId: string) => {
-    const today = startOfDay(new Date());
-    const taskDateObj = startOfDay(new Date(selectedDate));
-
-    if (isBefore(taskDateObj, today)) {
-      navigate(`/mentee/task/${taskId}`);
-    } else {
-      navigate(`/mentee/task/${taskId}/submit`);
-    }
+    navigate(`/mentee/task/${taskId}`);
   };
 
   const handleToggle = async (task: Task) => {
@@ -70,7 +62,7 @@ export const TaskList = () => {
     <VStack spacing={3} justify={'center'} align="stretch">
       {tasks.length === 0 ? (
         <Text textAlign="center" color="gray.500" py={10}>
-          등록된 할 일이 없습니다.
+          ?깅줉?????쇱씠 ?놁뒿?덈떎.
         </Text>
       ) : (
         tasks.map((task) => (
@@ -97,3 +89,5 @@ export const TaskList = () => {
     </VStack>
   );
 };
+
+

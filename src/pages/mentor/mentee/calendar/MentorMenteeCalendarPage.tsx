@@ -20,7 +20,7 @@ const CreateButton = ({ isMobile = false, onClick }: CreateButtonProps) => (
         onClick={onClick}
         _hover={{ bg: "#3b8fd9" }}
     >
-        ?쇱젙 留뚮뱾湲?
+        일정 만들기
     </Button>
 );
 

@@ -73,7 +73,7 @@ export const MentorPlannerSection = ({ menteeName }: Props) => {
     return (
         <Box>
             <Box>
-                <Text fontSize="20px" fontWeight="bold" mb={6}>{menteeName}???뚮옒??</Text>
+                <Text fontSize="20px" fontWeight="bold" mb={6}>{menteeName}님 플래너</Text>
 
                 <DateController
                     currentDate={currentDate}

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useAuthStore } from '@/shared/stores/authStore';
+import { useAuthStore, getAuthToken, isTokenValid } from '@/shared/stores/authStore';
 import { userApi } from '@/features/user/api/userApi';
 
 export const useFcmRegistration = () => {
@@ -8,6 +8,8 @@ export const useFcmRegistration = () => {
 
   useEffect(() => {
     if (!user) return;
+    const authToken = getAuthToken();
+    if (!isTokenValid(authToken)) return;
     const token = user.fcmToken || '';
     if (!token) return;
     if (lastTokenRef.current === token) return;

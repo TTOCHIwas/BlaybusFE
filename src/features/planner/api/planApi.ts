@@ -2,8 +2,6 @@
 import { DailyPlanner, mapDailyPlannerFromApi } from '@/entities/daily-plan/types';
 import { Task, mapTaskFromApi } from '@/entities/task/types';
 import { TaskLog, mapTaskLogFromApi } from '@/entities/task-log/types';
-import { USE_MOCK } from '@/shared/mocks/mockEnv';
-import { mockApi } from '@/shared/mocks/mockApi';
 import { asRecord, asOptionalArray, asOptionalString, asString, asNumber, pick, isRecord } from '@/shared/api/parse';
 import type { Subject } from '@/shared/constants/enums';
 
@@ -111,7 +109,6 @@ const normalizeFeedback = (raw: unknown): PlanFeedback => {
 
 export const planApi = {
   getDailyPlan: async (params: DailyPlanQuery): Promise<DailyPlanResult> => {
-    if (USE_MOCK) return mockApi.plan.getDailyPlan(params);
     const data = await apiClient.get('/plans', { params });
     const obj = asRecord(data, 'PlanResponse');
 
@@ -120,22 +117,17 @@ export const planApi = {
     const taskLogsRaw = asOptionalArray(pick(obj, ['taskLogs', 'task_logs']), 'PlanResponse.taskLogs') ?? [];
 
     const planner = plannerRaw ? normalizePlanner(plannerRaw) : null;
-    const tasks = tasksRaw.map(normalizeTask);
+    const planMenteeId =
+      asOptionalString(pick(obj, ['menteeId', 'mentee_id']), 'PlanResponse.menteeId') ??
+      (planner ? planner.menteeId : undefined);
+    const tasks = tasksRaw.map((task) => {
+      if (isRecord(task) && planMenteeId && !('menteeId' in task) && !('mentee_id' in task)) {
+        return normalizeTask({ ...task, menteeId: planMenteeId });
+      }
+      return normalizeTask(task);
+    });
 
-    let taskLogs: TaskLog[] = taskLogsRaw.map(normalizeTaskLog);
-    if (taskLogs.length === 0 && tasks.length > 0) {
-      const logsList = await Promise.all(
-        tasks.map(async (task) => {
-          try {
-            const logs = await apiClient.get(`/tasks/${task.id}/logs`);
-            return Array.isArray(logs) ? logs : (asRecord(logs, 'TaskLogs').content as unknown[] ?? []);
-          } catch {
-            return [];
-          }
-        })
-      );
-      taskLogs = logsList.flat().map(normalizeTaskLog);
-    }
+    const taskLogs: TaskLog[] = taskLogsRaw.map(normalizeTaskLog);
 
     const rawTotal = (obj as Record<string, unknown>).totalStudyTime ?? (obj as Record<string, unknown>).total_study_time;
     const totalStudyTime = rawTotal !== undefined
@@ -151,13 +143,11 @@ export const planApi = {
   },
 
   createPlan: async (payload: { planDate: string; dailyMemo: string | null }): Promise<DailyPlanner> => {
-    if (USE_MOCK) return mockApi.plan.createPlan(payload);
     const data = await apiClient.post('/plans', payload);
     return normalizePlanner(data);
   },
 
   updatePlan: async (planId: string | number, payload: { dailyMemo: string | null }): Promise<DailyPlanner> => {
-    if (USE_MOCK) return mockApi.plan.updatePlan(String(planId), payload);
     const data = await apiClient.put(`/plans/${planId}`, payload);
     return normalizePlanner(data);
   },
@@ -171,7 +161,6 @@ export const planApi = {
     page?: number;
     size?: number;
   }): Promise<CalendarTaskData[]> => {
-    if (USE_MOCK) return mockApi.plan.getCalendar(params);
     const { menteeId, year, month, subject, incompleteOnly } = params;
     const data = await apiClient.get('/plans/calendar', {
       params: {
@@ -193,7 +182,6 @@ export const planApi = {
     page?: number;
     size?: number;
   }): Promise<CalendarTaskData[]> => {
-    if (USE_MOCK) return mockApi.plan.getCalendar({ year: Number(params.date.slice(0, 4)), month: Number(params.date.slice(5, 7)) });
     const data = await apiClient.get('/plans/calendar/weekly', {
       params: {
         menteeId: params.menteeId,
@@ -206,26 +194,22 @@ export const planApi = {
   },
 
   getFeedback: async (planId: string | number): Promise<PlanFeedback | null> => {
-    if (USE_MOCK) return mockApi.plan.getFeedback(planId);
     const data = await apiClient.get(`/plans/${planId}/feedback`);
     if (!data) return null;
     return normalizeFeedback(data);
   },
 
   createFeedback: async (planId: string | number, content: string): Promise<PlanFeedback> => {
-    if (USE_MOCK) return mockApi.plan.createFeedback(planId, content);
     const data = await apiClient.post(`/plans/${planId}/feedback`, { content });
     return normalizeFeedback(data);
   },
 
   updateFeedback: async (planId: string | number, content: string): Promise<PlanFeedback> => {
-    if (USE_MOCK) return mockApi.plan.updateFeedback(planId, content);
     const data = await apiClient.put(`/plans/${planId}/feedback`, { content });
     return normalizeFeedback(data);
   },
 
   deleteFeedback: async (planId: string | number): Promise<void> => {
-    if (USE_MOCK) return mockApi.plan.deleteFeedback(planId);
     await apiClient.delete(`/plans/${planId}/feedback`);
   },
 };

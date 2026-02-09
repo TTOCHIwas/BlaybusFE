@@ -28,7 +28,7 @@ export const HistorySection = () => {
       <Box >
         {isLoading ? (
           <Flex justify="center" py={10} color="gray.400">
-            <Text>로딩�?..</Text>
+            <Text>로딩중..</Text>
           </Flex>
         ) : list.length > 0 ? (
           <VStack spacing={2} align="stretch">

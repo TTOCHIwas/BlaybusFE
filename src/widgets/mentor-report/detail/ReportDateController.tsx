@@ -47,33 +47,33 @@ export const ReportDateController = ({
     return (
         <HStack spacing={2} mb={6}>
             <Menu>
-                <DropdownButton label={`${year} Year`} />
+                <DropdownButton label={`${year} 년`} />
                 <MenuList>
                     {years.map((y) => (
                         <MenuItem key={y} onClick={() => onChangeYear(y)}>
-                            {y} Year
+                            {y} 년
                         </MenuItem>
                     ))}
                 </MenuList>
             </Menu>
 
             <Menu>
-                <DropdownButton label={`${month} Month`} />
+                <DropdownButton label={`${month} 월`} />
                 <MenuList maxH="200px" overflowY="auto">
                     {months.map((m) => (
                         <MenuItem key={m} onClick={() => onChangeMonth(m)}>
-                            {m} Month
+                            {m} 월
                         </MenuItem>
                     ))}
                 </MenuList>
             </Menu>
 
             <Menu>
-                <DropdownButton label={`${week} Week`} />
+                <DropdownButton label={`${week} 주차`} />
                 <MenuList>
                     {weeks.map((w) => (
                         <MenuItem key={w} onClick={() => onChangeWeek(w)}>
-                            {w} Week
+                            {w} 주차
                         </MenuItem>
                     ))}
                 </MenuList>
