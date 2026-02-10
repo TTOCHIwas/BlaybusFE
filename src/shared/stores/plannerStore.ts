@@ -6,6 +6,7 @@ import { DailyPlanner } from '@/entities/daily-plan/types';
 import { getAdjustedDate, parseDurationToSeconds } from '@/shared/lib/date';
 import { getAuthorizedUser } from './authStore'; 
 import { planApi } from '@/features/planner/api/planApi';
+import { taskApi } from '@/features/task/api/taskApi';
 
 const getDateFromISO = (isoString: string): string => {
   return isoString.split('T')[0];
@@ -142,11 +143,20 @@ export const usePlannerStore = create<PlannerState>((set, get) => ({
     try {
       const [year, month, day] = date.split('-').map(Number);
       const data = await planApi.getDailyPlan({ year, month, day, menteeId });
+      let taskLogs = data.taskLogs;
+      if (taskLogs.length === 0 && data.tasks.length > 0) {
+        const results = await Promise.allSettled(
+          data.tasks.map((task) => taskApi.getTaskLogs(task.id))
+        );
+        taskLogs = results.flatMap((result) =>
+          result.status === 'fulfilled' ? result.value : []
+        );
+      }
       set({
         taskCache: data.tasks,
-        taskLogCache: data.taskLogs,
+        taskLogCache: taskLogs,
         tasks: data.tasks,
-        taskLogs: data.taskLogs,
+        taskLogs,
         currentDailyPlanner: data.planner,
         isLoading: false,
       });

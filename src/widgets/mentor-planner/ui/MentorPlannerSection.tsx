@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { Subject } from '@/shared/constants/subjects';
 import { logsToGridState, StudyTimeGridView } from '@/features/study-time';
 import { planApi } from '@/features/planner/api/planApi';
+import { taskApi } from '@/features/task/api/taskApi';
 import type { Task } from '@/entities/task/types';
 import type { TaskLog } from '@/entities/task-log/types';
 import type { DailyPlanner } from '@/entities/daily-plan/types';
@@ -39,7 +40,14 @@ export const MentorPlannerSection = ({ menteeName }: Props) => {
                 if (!active) return;
                 setPlanner(result.planner);
                 setDailyTasks(result.tasks);
-                setDailyLogs(result.taskLogs);
+                let taskLogs = result.taskLogs;
+                if (taskLogs.length === 0 && result.tasks.length > 0) {
+                    const results = await Promise.allSettled(
+                        result.tasks.map((task) => taskApi.getTaskLogs(task.id))
+                    );
+                    taskLogs = results.flatMap((res) => (res.status === 'fulfilled' ? res.value : []));
+                }
+                setDailyLogs(taskLogs);
             } catch (error) {
                 console.error('Failed to load mentor daily plan', error);
             }

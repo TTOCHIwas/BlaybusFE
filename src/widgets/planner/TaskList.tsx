@@ -62,7 +62,7 @@ export const TaskList = () => {
     <VStack spacing={3} justify={'center'} align="stretch">
       {tasks.length === 0 ? (
         <Text textAlign="center" color="gray.500" py={10}>
-          ?깅줉?????쇱씠 ?놁뒿?덈떎.
+          등록된 과제가 없습니다.
         </Text>
       ) : (
         tasks.map((task) => (
