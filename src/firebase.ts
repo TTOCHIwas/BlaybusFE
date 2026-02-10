@@ -15,12 +15,30 @@ const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
 const app = initializeApp(firebaseConfig);
 const isBrowser = typeof window !== 'undefined';
+let swRegistration: ServiceWorkerRegistration | null = null;
+let swRegisterPromise: Promise<ServiceWorkerRegistration | null> | null = null;
 
 const getMessagingIfSupported = async () => {
   if (!isBrowser) return null;
   const supported = await isSupported();
   if (!supported) return null;
   return getMessaging(app);
+};
+
+const registerMessagingServiceWorker = async (): Promise<ServiceWorkerRegistration | null> => {
+  if (!isBrowser || !('serviceWorker' in navigator)) return null;
+  if (swRegistration) return swRegistration;
+  if (swRegisterPromise) return swRegisterPromise;
+
+  swRegisterPromise = navigator.serviceWorker
+    .register('/firebase-messaging-sw.js')
+    .then((registration) => {
+      swRegistration = registration;
+      return registration;
+    })
+    .catch(() => null);
+
+  return swRegisterPromise;
 };
 
 export async function requestFcmToken(): Promise<string | null> {
@@ -32,9 +50,13 @@ export async function requestFcmToken(): Promise<string | null> {
 
   const messaging = await getMessagingIfSupported();
   if (!messaging || !vapidKey) return null;
+  const serviceWorkerRegistration = await registerMessagingServiceWorker();
 
   try {
-    const token = await getToken(messaging, { vapidKey });
+    const token = await getToken(messaging, {
+      vapidKey,
+      serviceWorkerRegistration: serviceWorkerRegistration ?? undefined,
+    });
     return token ?? null;
   } catch {
     return null;
