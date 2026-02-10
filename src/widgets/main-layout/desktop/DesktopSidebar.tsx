@@ -114,7 +114,7 @@ export const DesktopSidebar = ({ isCollapsed, onToggleSidebar }: Props) => {
                   key={item.path}
                   label={item.label}
                   path={item.path}
-                  icon={<item.icon w={4} h={4} />}
+                  icon={<item.icon width={16} height={16} />}
                   isCollapsed={isCollapsed}
                 />
               ))}
@@ -129,7 +129,7 @@ export const DesktopSidebar = ({ isCollapsed, onToggleSidebar }: Props) => {
                   key={item.path}
                   label={item.label}
                   path={item.path}
-                  icon={<item.icon w={4} h={4} />}
+                  icon={<item.icon width={16} height={16} />}
                   isCollapsed={isCollapsed}
                 />
               ))}

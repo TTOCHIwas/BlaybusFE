@@ -12,7 +12,12 @@ interface Props {
   onAddClick: () => void;   
   onEditMode: (id: string) => void;  
   onCancel: () => void;    
-  onSave: (id: string, title: string, fileName?: string) => void;
+  onSave: (args: {
+    id: string;
+    title: string;
+    file?: File | null;
+    existingContentId?: string;
+  }) => void;
   onDelete: (id: string) => void; 
 }
 
