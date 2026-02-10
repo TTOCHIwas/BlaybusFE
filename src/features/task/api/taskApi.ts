@@ -26,6 +26,21 @@ const safeOptionalString = (value: unknown): string | undefined => {
   return undefined;
 };
 
+const toOptionalBoolean = (value: unknown): boolean | undefined => {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') {
+    if (value === 1) return true;
+    if (value === 0) return false;
+    return undefined;
+  }
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === 'true' || normalized === '1') return true;
+    if (normalized === 'false' || normalized === '0') return false;
+  }
+  return undefined;
+};
+
 const toWeakness = (taskObj: Record<string, unknown>): TaskDetailFullData['weakness'] => {
   const weaknessRaw = pick(taskObj, ['weakness', 'weaknessInfo', 'weakness_info', 'weaknessDetail', 'weakness_detail']);
   const weaknessObj = isRecord(weaknessRaw) ? weaknessRaw : null;
@@ -175,6 +190,7 @@ export const taskApi = {
 
     const submission = toSubmission(submissionRaw);
     const weakness = toWeakness(taskObj);
+    const isMandatory = toOptionalBoolean(pick(taskObj, ['isMandatory', 'is_mandatory']));
 
     return {
       id: asString(pick(taskObj, ['id']), 'TaskDetail.id'),
@@ -185,6 +201,7 @@ export const taskApi = {
       })(),
       taskDate: asString(pick(taskObj, ['taskDate', 'task_date', 'date']), 'TaskDetail.taskDate'),
       isMentorChecked: Boolean(pick(taskObj, ['isMentorChecked', 'is_mentor_checked'])),
+      isMandatory,
       menteeId: asOptionalString(pick(taskObj, ['menteeId', 'mentee_id']), 'TaskDetail.menteeId') ?? '',
       weaknessId: asOptionalString(pick(taskObj, ['weaknessId', 'weakness_id']), 'TaskDetail.weaknessId') ?? null,
       description: asOptionalString(pick(taskObj, ['description', 'desc']), 'TaskDetail.description'),

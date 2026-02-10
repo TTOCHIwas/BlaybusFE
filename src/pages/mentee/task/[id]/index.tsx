@@ -1,6 +1,36 @@
-﻿import { useEffect, useMemo, useState } from 'react';
-import { Box, Button, Container, Flex, Text, VStack, Divider } from '@chakra-ui/react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  Text,
+  VStack,
+  Divider,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  IconButton,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalContent,
+  ModalOverlay,
+  Input,
+  Select,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  useDisclosure,
+  useToast,
+} from '@chakra-ui/react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
+import { FiMoreVertical } from 'react-icons/fi';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { TaskDetailHeader } from '@/widgets/task-detail/TaskDetailHeader';
@@ -12,19 +42,29 @@ import { feedbackApi } from '@/features/task-feedback/api/feedbackApi';
 import { useTaskDetail } from '@/features/task/model/useTaskDetail';
 import type { Weakness } from '@/entities/weakness/types';
 import { weaknessApi } from '@/features/weakness/api/weaknessApi';
+import { SUBJECT_LABELS, Subject } from '@/shared/constants/subjects';
+import { taskApi } from '@/features/task/api/taskApi';
 
 const MenteeTaskDetailPage = () => {
   const { taskId } = useParams<{ taskId: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const toast = useToast();
 
   const { loadFeedbacks, loadAnswers, resetUIState, setActiveFeedback } = useTaskFeedbackStore();
-  const { data, isLoading } = useTaskDetail(taskId);
+  const { data, isLoading, setData } = useTaskDetail(taskId);
   const DEBUG_FEEDBACK = import.meta.env.DEV;
   const [searchParams] = useSearchParams();
   const focusFeedbackId = searchParams.get('feedbackId');
   const [focusImageId, setFocusImageId] = useState<string | null>(null);
   const [weaknessDetail, setWeaknessDetail] = useState<Weakness | null>(null);
+  const editDialog = useDisclosure();
+  const deleteDialog = useDisclosure();
+  const deleteCancelRef = useRef<HTMLButtonElement>(null);
+  const [isEditSaving, setIsEditSaving] = useState(false);
+  const [isDeleteSaving, setIsDeleteSaving] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editSubject, setEditSubject] = useState<Subject>('OTHER');
 
   const submissionImages = useMemo(() => {
     const images = data?.submission?.images ?? [];
@@ -34,6 +74,14 @@ const MenteeTaskDetailPage = () => {
       imageUrl: url,
     }));
   }, [data?.submission?.images, data?.submission?.imageIds]);
+
+  const hasMandatoryFlag = data?.isMandatory !== undefined && data?.isMandatory !== null;
+  const canEditOrDelete =
+    Boolean(user) &&
+    Boolean(data) &&
+    (hasMandatoryFlag
+      ? (user?.role === 'MENTOR' ? Boolean(data?.isMandatory) : !data?.isMandatory)
+      : true);
 
   useEffect(() => {
     let active = true;
@@ -194,7 +242,78 @@ const MenteeTaskDetailPage = () => {
     setActiveFeedback,
   ]);
 
-  const handleBackToList = () => navigate(-1);
+  const openEdit = () => {
+    if (!data) return;
+    setEditTitle(data.title ?? '');
+    setEditSubject((data.subject ?? 'OTHER') as Subject);
+    editDialog.onOpen();
+  };
+
+  const handleEditSave = async () => {
+    if (!data?.id) return;
+    if (!editTitle.trim()) {
+      toast({
+        title: '제목을 입력해주세요.',
+        status: 'warning',
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
+    setIsEditSaving(true);
+    try {
+      await taskApi.updateTask(data.id, {
+        title: editTitle.trim(),
+        subject: editSubject,
+      });
+      setData((prev) =>
+        prev ? { ...prev, title: editTitle.trim(), subject: editSubject } : prev
+      );
+      toast({
+        title: '과제가 수정되었습니다.',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
+      editDialog.onClose();
+    } catch {
+      toast({
+        title: '수정에 실패했습니다.',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
+    } finally {
+      setIsEditSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!data?.id) return;
+    setIsDeleteSaving(true);
+    try {
+      await taskApi.deleteTask(data.id);
+      toast({
+        title: '과제가 삭제되었습니다.',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
+      deleteDialog.onClose();
+      navigate(-1);
+    } catch {
+      toast({
+        title: '삭제에 실패했습니다.',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      });
+    } finally {
+      setIsDeleteSaving(false);
+    }
+  };
+
+    const handleBackToList = () => navigate(-1);
 
   if (isLoading) return <Box p={10}>로딩중...</Box>;
   if (!user) return <Box p={10}>로그인이 필요합니다.</Box>;
@@ -210,6 +329,51 @@ const MenteeTaskDetailPage = () => {
             isMentorChecked={data.isMentorChecked}
             title={data.title}
             supplement={data.weakness?.title}
+            action={
+              <Menu>
+                <MenuButton
+                  as={IconButton}
+                  aria-label="Task options"
+                  icon={<FiMoreVertical />}
+                  variant="ghost"
+                  size="sm"
+                />
+                <MenuList>
+                  <MenuItem
+                    onClick={() => {
+                      if (!canEditOrDelete) {
+                        toast({
+                          title: '권한이 없습니다.',
+                          status: 'warning',
+                          duration: 2000,
+                          isClosable: true,
+                        });
+                        return;
+                      }
+                      openEdit();
+                    }}
+                  >
+                    수정
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      if (!canEditOrDelete) {
+                        toast({
+                          title: '권한이 없습니다.',
+                          status: 'warning',
+                          duration: 2000,
+                          isClosable: true,
+                        });
+                        return;
+                      }
+                      deleteDialog.onOpen();
+                    }}
+                  >
+                    삭제
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            }
           />
         </Box>
         <Divider display={{ base: 'none', md: 'flex' }} />
@@ -284,9 +448,89 @@ const MenteeTaskDetailPage = () => {
           </Button>
         </Flex>
       </VStack>
-    </Container>
+      <Modal isOpen={editDialog.isOpen} onClose={editDialog.onClose} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>과제 수정</ModalHeader>
+          <ModalBody>
+            <VStack spacing={4} align="stretch">
+              <Box>
+                <Text mb={2} fontSize="sm" color="gray.600">
+                  제목
+                </Text>
+                <Input
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  placeholder="제목을 입력해주세요."
+                />
+              </Box>
+              <Box>
+                <Text mb={2} fontSize="sm" color="gray.600">
+                  과목
+                </Text>
+                <Select
+                  value={editSubject}
+                  onChange={(e) => setEditSubject(e.target.value as Subject)}
+                >
+                  {Object.entries(SUBJECT_LABELS).map(([key, label]) => (
+                    <option key={key} value={key}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
+              </Box>
+            </VStack>
+          </ModalBody>
+          <ModalFooter gap={3}>
+            <Button variant="ghost" onClick={editDialog.onClose}>
+              취소
+            </Button>
+            <Button colorScheme="blue" onClick={handleEditSave} isLoading={isEditSaving}>
+              저장
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <AlertDialog
+        isOpen={deleteDialog.isOpen}
+        leastDestructiveRef={deleteCancelRef}
+        onClose={deleteDialog.onClose}
+        isCentered
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent borderRadius="12px">
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              과제를 삭제할까요?
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              삭제한 과제는 복구할 수 없습니다.
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={deleteCancelRef} onClick={deleteDialog.onClose}>
+                취소
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={handleDelete}
+                ml={3}
+                isLoading={isDeleteSaving}
+              >
+                삭제
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>    </Container>
   );
 };
 
 export default MenteeTaskDetailPage;
+
+
+
+
+
+
+
 
