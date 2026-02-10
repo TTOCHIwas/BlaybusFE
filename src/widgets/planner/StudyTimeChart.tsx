@@ -4,13 +4,17 @@ import { TimerIcon } from '@/shared/ui/icons';
 import { usePlannerStore } from '@/shared/stores/plannerStore';
 import { useTimerStore } from '@/shared/stores/timerStore';
 import { formatDuration } from '@/shared/lib/date';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export const StudyTimeChart = () => {
-  const { currentDailyPlanner } = usePlannerStore();
+  const { currentDailyPlanner, taskLogs } = usePlannerStore();
   const { activeTaskId, timerStartedAt } = useTimerStore();
   
-  const savedSeconds = currentDailyPlanner?.totalStudyTime || 0;
+  const logSeconds = useMemo(
+    () => taskLogs.reduce((sum, log) => sum + (log.duration || 0), 0),
+    [taskLogs]
+  );
+  const savedSeconds = logSeconds || currentDailyPlanner?.totalStudyTime || 0;
   
   const [displayTotal, setDisplayTotal] = useState(savedSeconds);
   const displayValue = activeTaskId && timerStartedAt ? displayTotal : savedSeconds;
