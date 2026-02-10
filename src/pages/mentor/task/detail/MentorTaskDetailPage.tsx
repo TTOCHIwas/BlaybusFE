@@ -7,6 +7,19 @@
     VStack, 
     useDisclosure, 
     useToast,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+    IconButton,
+    Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader,
+    ModalContent,
+    ModalOverlay,
+    Input,
+    Select,
     AlertDialog,
     AlertDialogBody,
     AlertDialogFooter,
@@ -17,6 +30,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { format, parse } from 'date-fns';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { FiMoreVertical } from 'react-icons/fi';
 import { useAuthStore } from '@/shared/stores/authStore';
 import { useTaskFeedbackStore } from '@/shared/stores/taskFeedbackStore';
 import { ImageSlider, TaskDetailHeader } from '@/widgets/task-detail';
@@ -27,6 +41,7 @@ import { taskApi } from '@/features/task/api/taskApi';
 import { feedbackApi } from '@/features/task-feedback/api/feedbackApi';
 import type { Weakness } from '@/entities/weakness/types';
 import { weaknessApi } from '@/features/weakness/api/weaknessApi';
+import { SUBJECT_LABELS } from '@/shared/constants/subjects';
 
 const formatTaskDate = (value?: string) => {
     if (!value) return '';
@@ -50,10 +65,17 @@ const MentorTaskDetailPage = () => {
     const [weaknessDetail, setWeaknessDetail] = useState<Weakness | null>(null);
     const toast = useToast(); 
 
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const cancelRef = useRef<HTMLButtonElement>(null);
+    const exitDialog = useDisclosure();
+    const editDialog = useDisclosure();
+    const deleteDialog = useDisclosure();
+    const exitCancelRef = useRef<HTMLButtonElement>(null);
+    const deleteCancelRef = useRef<HTMLButtonElement>(null);
 
     const [isSaving, setIsSaving] = useState(false);
+    const [isEditSaving, setIsEditSaving] = useState(false);
+    const [isDeleteSaving, setIsDeleteSaving] = useState(false);
+    const [editTitle, setEditTitle] = useState('');
+    const [editSubject, setEditSubject] = useState<Subject>('OTHER');
     const { data, setData } = useTaskDetail(taskId);
     const effectiveTaskId = taskId ?? data?.id;
 
@@ -67,6 +89,13 @@ const MentorTaskDetailPage = () => {
     }, [data?.submission?.images, data?.submission?.imageIds]);
     const hasSubmission = Boolean(data?.submission);
     const submissionStatus = hasSubmission ? '제출됨' : '미제출';
+    const hasMandatoryFlag = data?.isMandatory !== undefined && data?.isMandatory !== null;
+    const canEditOrDelete =
+        Boolean(user) &&
+        Boolean(data) &&
+        (hasMandatoryFlag
+            ? (user.role === 'MENTOR' ? Boolean(data?.isMandatory) : !data?.isMandatory)
+            : true);
 
     useEffect(() => {
         let active = true;
@@ -230,7 +259,7 @@ const MentorTaskDetailPage = () => {
     ]);
 
     const handleExit = () => {
-        onClose();
+        exitDialog.onClose();
         navigate(-1);
     };
 
@@ -270,6 +299,77 @@ const MentorTaskDetailPage = () => {
         }
     };
 
+    const openEdit = () => {
+        if (!data) return;
+        setEditTitle(data.title ?? '');
+        setEditSubject((data.subject ?? 'OTHER') as Subject);
+        editDialog.onOpen();
+    };
+
+    const handleEditSave = async () => {
+        if (!effectiveTaskId) return;
+        if (!editTitle.trim()) {
+            toast({
+                title: '제목을 입력해주세요.',
+                status: 'warning',
+                duration: 2000,
+                isClosable: true,
+            });
+            return;
+        }
+        setIsEditSaving(true);
+        try {
+            await taskApi.updateTask(effectiveTaskId, {
+                title: editTitle.trim(),
+                subject: editSubject,
+            });
+            setData((prev) =>
+                prev ? { ...prev, title: editTitle.trim(), subject: editSubject } : prev
+            );
+            toast({
+                title: '과제가 수정되었습니다.',
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+            });
+            editDialog.onClose();
+        } catch {
+            toast({
+                title: '수정에 실패했습니다.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+        } finally {
+            setIsEditSaving(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!effectiveTaskId) return;
+        setIsDeleteSaving(true);
+        try {
+            await taskApi.deleteTask(effectiveTaskId);
+            toast({
+                title: '과제가 삭제되었습니다.',
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+            });
+            deleteDialog.onClose();
+            navigate(-1);
+        } catch {
+            toast({
+                title: '삭제에 실패했습니다.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+        } finally {
+            setIsDeleteSaving(false);
+        }
+    };
+
     if (!user) return null;
 
     return (
@@ -285,6 +385,51 @@ const MentorTaskDetailPage = () => {
                         supplement={data?.description ?? ''} 
                         statusLabel="제출 상태"
                         statusText={submissionStatus}
+                        action={data ? (
+                            <Menu>
+                                <MenuButton
+                                    as={IconButton}
+                                    aria-label="Task options"
+                                    icon={<FiMoreVertical />}
+                                    variant="ghost"
+                                    size="sm"
+                                />
+                                <MenuList>
+                                    <MenuItem
+                                        onClick={() => {
+                                            if (!canEditOrDelete) {
+                                                toast({
+                                                    title: '권한이 없습니다.',
+                                                    status: 'warning',
+                                                    duration: 2000,
+                                                    isClosable: true,
+                                                });
+                                                return;
+                                            }
+                                            openEdit();
+                                        }}
+                                    >
+                                        수정
+                                    </MenuItem>
+                                    <MenuItem
+                                        onClick={() => {
+                                            if (!canEditOrDelete) {
+                                                toast({
+                                                    title: '권한이 없습니다.',
+                                                    status: 'warning',
+                                                    duration: 2000,
+                                                    isClosable: true,
+                                                });
+                                                return;
+                                            }
+                                            deleteDialog.onOpen();
+                                        }}
+                                    >
+                                        삭제
+                                    </MenuItem>
+                                </MenuList>
+                            </Menu>
+                        ) : null}
                     />
                 </Box>
 
@@ -292,7 +437,7 @@ const MentorTaskDetailPage = () => {
                     <>
                         {/* Submission Viewer Section */}
                         <Box>
-                            <Text fontSize="18px" fontWeight="bold" mb={6} color="#333333">제출물 검토</Text>
+                            <Text fontSize="18px" fontWeight="bold" mb={6} color="#333333">학습 점검하기</Text>
                             <ImageSlider 
                                 images={formattedImages} 
                                 taskId={effectiveTaskId || 'temp-task-id'}
@@ -321,7 +466,7 @@ const MentorTaskDetailPage = () => {
                         <Flex justify="flex-end" gap={3} pt={8} pb={10}>
                             <Button
                                 variant="outline"
-                                onClick={onOpen}
+                                onClick={exitDialog.onOpen}
                                 h="48px"
                                 px={8}
                                 borderColor="#E5E7EB"
@@ -377,9 +522,9 @@ const MentorTaskDetailPage = () => {
             </VStack>
 
             <AlertDialog
-                isOpen={isOpen}
-                leastDestructiveRef={cancelRef}
-                onClose={onClose}
+                isOpen={exitDialog.isOpen}
+                leastDestructiveRef={exitCancelRef}
+                onClose={exitDialog.onClose}
                 isCentered 
             >
                 <AlertDialogOverlay>
@@ -394,11 +539,90 @@ const MentorTaskDetailPage = () => {
                         </AlertDialogBody>
 
                         <AlertDialogFooter>
-                            <Button ref={cancelRef} onClick={onClose}>
+                            <Button ref={exitCancelRef} onClick={exitDialog.onClose}>
                                 취소
                             </Button>
                             <Button colorScheme="red" onClick={handleExit} ml={3}>
                                 나가기
+                            </Button>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialogOverlay>
+            </AlertDialog>
+
+            <Modal isOpen={editDialog.isOpen} onClose={editDialog.onClose} isCentered>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>과제 수정</ModalHeader>
+                    <ModalBody>
+                        <VStack spacing={4} align="stretch">
+                            <Box>
+                                <Text mb={2} fontSize="sm" color="gray.600">
+                                    제목
+                                </Text>
+                                <Input
+                                    value={editTitle}
+                                    onChange={(e) => setEditTitle(e.target.value)}
+                                    placeholder="제목을 입력해주세요."
+                                />
+                            </Box>
+                            <Box>
+                                <Text mb={2} fontSize="sm" color="gray.600">
+                                    과목
+                                </Text>
+                                <Select
+                                    value={editSubject}
+                                    onChange={(e) => setEditSubject(e.target.value as Subject)}
+                                >
+                                    {Object.entries(SUBJECT_LABELS).map(([key, label]) => (
+                                        <option key={key} value={key}>
+                                            {label}
+                                        </option>
+                                    ))}
+                                </Select>
+                            </Box>
+                        </VStack>
+                    </ModalBody>
+                    <ModalFooter gap={3}>
+                        <Button variant="ghost" onClick={editDialog.onClose}>
+                            취소
+                        </Button>
+                        <Button
+                            colorScheme="blue"
+                            onClick={handleEditSave}
+                            isLoading={isEditSaving}
+                        >
+                            저장
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+
+            <AlertDialog
+                isOpen={deleteDialog.isOpen}
+                leastDestructiveRef={deleteCancelRef}
+                onClose={deleteDialog.onClose}
+                isCentered
+            >
+                <AlertDialogOverlay>
+                    <AlertDialogContent borderRadius="12px">
+                        <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                            과제를 삭제할까요?
+                        </AlertDialogHeader>
+                        <AlertDialogBody>
+                            삭제한 과제는 복구할 수 없습니다.
+                        </AlertDialogBody>
+                        <AlertDialogFooter>
+                            <Button ref={deleteCancelRef} onClick={deleteDialog.onClose}>
+                                취소
+                            </Button>
+                            <Button
+                                colorScheme="red"
+                                onClick={handleDelete}
+                                ml={3}
+                                isLoading={isDeleteSaving}
+                            >
+                                삭제
                             </Button>
                         </AlertDialogFooter>
                     </AlertDialogContent>

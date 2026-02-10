@@ -109,14 +109,14 @@ export const ResourceSlider = ({ materials }: ResourceSliderProps) => {
         </Flex>
       </Flex>
 
-      <Box position="relative" w="full" bg="white" borderRadius={10} overflow="hidden">
+      <Box position="relative" w="full" bg="#F9F9FB" borderRadius={10} overflow="hidden">
         <Box 
           w="full" 
           aspectRatio={3 / 4} 
           maxH="80vh"         
           overflowY="auto"    
           position="relative" 
-          bg="white"
+          bg="#F9F9FB"
           css={{
             '&::-webkit-scrollbar': { width: '4px' },
             '&::-webkit-scrollbar-track': { background: 'transparent' },
@@ -125,7 +125,7 @@ export const ResourceSlider = ({ materials }: ResourceSliderProps) => {
         >
           
           {fileType === 'IMAGE' && (
-            <Flex w="full" h="full" align="center" justify="center" bg="gray.50">
+            <Flex w="full" h="full" align="center" justify="center" bg="#F9F9FB">
               <Image
                 src={currentItem.url}
                 alt={currentItem.title}
@@ -137,7 +137,7 @@ export const ResourceSlider = ({ materials }: ResourceSliderProps) => {
           )}
 
           {fileType === 'PDF' && (
-            <Box w="full">
+            <Box w="full" bg={'#F9F9FB'}>
               <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
                 <Viewer
                   fileUrl={currentItem.url}
@@ -187,7 +187,7 @@ export const ResourceSlider = ({ materials }: ResourceSliderProps) => {
           </>
         )}
 
-        {fileType !== 'PDF' && (
+        {fileType !== 'PDF' && materials.length > 1 && (
           <Flex position="absolute" bottom={4} justify="center" w="full" zIndex={10} pointerEvents="none">
             <Box bg="blackAlpha.600" px={3} py={1} borderRadius="full">
               <Text color="white" fontSize="sm" fontWeight="medium">

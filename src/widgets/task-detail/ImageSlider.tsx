@@ -125,13 +125,15 @@ export const ImageSlider = ({ images, taskId, currentUserId, userRole, onDelete,
       display="flex"          
       justifyContent="center" 
       alignItems={{ base: 'flex-start', md: 'center' }}
-      pb={16}
+      bg={'#F9F9FB'}
+
     >
       <Box 
         as={motion.div}
         position="relative" 
         h={{ base: 'auto', md: 'full' }} 
         w={{ base: 'full', md: 'auto' }}
+        maxH="80vh"
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.1}
@@ -144,9 +146,12 @@ export const ImageSlider = ({ images, taskId, currentUserId, userRole, onDelete,
           alt={`Submission ${currentIndex + 1}`}
           h={{ base: 'auto', md: '100%' }}
           w={{ base: '100%', md: 'auto' }}
+          maxH="80vh"
           maxW="100%"
           display="block"
+          objectFit="contain"
           pointerEvents="none" 
+          
         />
         
         {!isSubmissionMode && (
@@ -244,21 +249,23 @@ export const ImageSlider = ({ images, taskId, currentUserId, userRole, onDelete,
         </>
       )}
 
-      <Flex 
-        position="absolute" 
-        bottom={4} 
-        justify="center" 
-        align="center"
-        w="full"
-        zIndex={30}
-        pointerEvents="none"
-      >
-        <Box bg="blackAlpha.600" px={3} py={1} borderRadius="full" backdropFilter="blur(4px)">
-          <Text color="white" fontSize="sm" fontWeight="medium">
-            {safeIndex + 1} / {images.length}
-          </Text>
-        </Box>
-      </Flex>
+      {images.length > 1 && (
+        <Flex 
+          position="absolute" 
+          bottom={4} 
+          justify="center" 
+          align="center"
+          w="full"
+          zIndex={30}
+          pointerEvents="none"
+        >
+          <Box bg="blackAlpha.600" px={3} py={1} borderRadius="full" backdropFilter="blur(4px)">
+            <Text color="white" fontSize="sm" fontWeight="medium">
+              {safeIndex + 1} / {images.length}
+            </Text>
+          </Box>
+        </Flex>
+      )}
       
 
     </Box>
