@@ -16,7 +16,7 @@
 } from '@chakra-ui/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { format, parse } from 'date-fns';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/shared/stores/authStore';
 import { useTaskFeedbackStore } from '@/shared/stores/taskFeedbackStore';
 import { ImageSlider, TaskDetailHeader } from '@/widgets/task-detail';
@@ -40,8 +40,11 @@ const MentorTaskDetailPage = () => {
     const { taskId } = useParams<{ taskId: string }>(); 
     const navigate = useNavigate();
     const { user } = useAuthStore();
-    const { loadFeedbacks, loadAnswers, resetUIState } = useTaskFeedbackStore();
+    const { loadFeedbacks, loadAnswers, resetUIState, setActiveFeedback } = useTaskFeedbackStore();
     const DEBUG_FEEDBACK = import.meta.env.DEV;
+    const [searchParams] = useSearchParams();
+    const focusFeedbackId = searchParams.get('feedbackId');
+    const [focusImageId, setFocusImageId] = useState<string | null>(null);
     const toast = useToast(); 
 
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -144,6 +147,13 @@ const MentorTaskDetailPage = () => {
                 }
                 loadFeedbacks(feedbacks);
                 loadAnswers(answers);
+                if (focusFeedbackId) {
+                    const target = feedbacks.find((fb) => fb.id === focusFeedbackId);
+                    if (target) {
+                        setFocusImageId(target.imageId);
+                        setActiveFeedback(target.id);
+                    }
+                }
             }
         };
 
@@ -161,6 +171,8 @@ const MentorTaskDetailPage = () => {
         resetUIState,
         loadFeedbacks,
         loadAnswers,
+        focusFeedbackId,
+        setActiveFeedback,
         DEBUG_FEEDBACK,
     ]);
 
@@ -233,6 +245,7 @@ const MentorTaskDetailPage = () => {
                                 taskId={effectiveTaskId || 'temp-task-id'}
                                 currentUserId={user.id} 
                                 userRole={user.role}   
+                                focusImageId={focusImageId}
                             />
                         </Box>
 
@@ -343,6 +356,10 @@ const MentorTaskDetailPage = () => {
 };
 
 export default MentorTaskDetailPage;
+
+
+
+
 
 
 
