@@ -1,6 +1,8 @@
 ﻿import { apiClient } from '@/shared/api/base';
 import { mapTaskFromApi } from '@/entities/task/types';
+import { mapTaskLogFromApi } from '@/entities/task-log/types';
 import type { TaskDetailFullData, FileData } from '@/entities/task-detail/types';
+import type { TaskLog } from '@/entities/task-log/types';
 import type { Subject } from '@/shared/constants/subjects';
 import { asArray, asOptionalString, asRecord, asString, isRecord, pick } from '@/shared/api/parse';
 
@@ -139,6 +141,22 @@ const toSubmission = (raw: unknown): TaskDetailFullData['submission'] | null => 
   };
 };
 
+const normalizeTaskLogs = (raw: unknown): TaskLog[] => {
+  const list = Array.isArray(raw)
+    ? raw
+    : asArray(pick(asRecord(raw, 'TaskLogs'), ['content']), 'TaskLogs.content');
+
+  const mapped = list.map(mapTaskLogFromApi);
+  return mapped.sort((a, b) => {
+    const startDiff = new Date(a.startAt).getTime() - new Date(b.startAt).getTime();
+    if (startDiff !== 0) return startDiff;
+    const idA = Number(a.id);
+    const idB = Number(b.id);
+    if (!Number.isNaN(idA) && !Number.isNaN(idB)) return idA - idB;
+    return String(a.id).localeCompare(String(b.id));
+  });
+};
+
 export const taskApi = {
   getTaskDetail: async (taskId: string): Promise<TaskDetailFullData> => {
     const taskRaw = await apiClient.get(`/tasks/${taskId}`);
@@ -218,12 +236,9 @@ export const taskApi = {
     return data;
   },
 
-  getTaskLogs: async (taskId: string) => {
+  getTaskLogs: async (taskId: string): Promise<TaskLog[]> => {
     const data = await apiClient.get(`/tasks/${taskId}/logs`);
-    if (Array.isArray(data)) return data;
-    const obj = asRecord(data, 'TaskLogs');
-    const list = asArray(pick(obj, ['content']), 'TaskLogs.content');
-    return list;
+    return normalizeTaskLogs(data);
   },
 };
 const SUBJECT_VALUES: readonly Subject[] = ['KOREAN', 'ENGLISH', 'MATH', 'OTHER'];
