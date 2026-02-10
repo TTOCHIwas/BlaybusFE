@@ -11,6 +11,8 @@ export interface TaskDetailFullData {
   subject: Subject;
   taskDate: string;
   isMentorChecked: boolean;
+  menteeId: string;
+  weaknessId?: string | null;
   description?: string;
   taskFile: FileData | null;
   weakness: {

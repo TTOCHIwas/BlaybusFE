@@ -10,6 +10,8 @@ import { useAuthStore } from '@/shared/stores/authStore';
 import { useTaskFeedbackStore } from '@/shared/stores/taskFeedbackStore';
 import { feedbackApi } from '@/features/task-feedback/api/feedbackApi';
 import { useTaskDetail } from '@/features/task/model/useTaskDetail';
+import type { Weakness } from '@/entities/weakness/types';
+import { weaknessApi } from '@/features/weakness/api/weaknessApi';
 
 const MenteeTaskDetailPage = () => {
   const { taskId } = useParams<{ taskId: string }>();
@@ -22,6 +24,7 @@ const MenteeTaskDetailPage = () => {
   const [searchParams] = useSearchParams();
   const focusFeedbackId = searchParams.get('feedbackId');
   const [focusImageId, setFocusImageId] = useState<string | null>(null);
+  const [weaknessDetail, setWeaknessDetail] = useState<Weakness | null>(null);
 
   const submissionImages = useMemo(() => {
     const images = data?.submission?.images ?? [];
@@ -32,23 +35,74 @@ const MenteeTaskDetailPage = () => {
     }));
   }, [data?.submission?.images, data?.submission?.imageIds]);
 
-  const studyMaterials: StudyMaterial[] = [];
-  if (data?.weakness?.file) {
-    studyMaterials.push({
-      id: 'weakness-file',
-      title: data.weakness.file.title,
-      url: data.weakness.file.url,
-      label: data.weakness.title,
-    });
-  }
-  if (data?.taskFile) {
-    studyMaterials.push({
-      id: 'task-file',
-      title: data.taskFile.title,
-      url: data.taskFile.url,
-      label: 'Task File',
-    });
-  }
+  useEffect(() => {
+    let active = true;
+    const loadWeakness = async () => {
+      if (!data?.weaknessId) {
+        if (active) setWeaknessDetail(null);
+        return;
+      }
+      try {
+        const list =
+          user?.role === 'MENTOR'
+            ? (data.menteeId ? await weaknessApi.listByMentee(data.menteeId) : [])
+            : await weaknessApi.listMine();
+        const found = list.find((item) => item.id === String(data.weaknessId));
+        if (active) setWeaknessDetail(found ?? null);
+      } catch {
+        if (active) setWeaknessDetail(null);
+      }
+    };
+    loadWeakness();
+    return () => {
+      active = false;
+    };
+  }, [data?.weaknessId, data?.menteeId, user?.role]);
+
+  const studyMaterials: StudyMaterial[] = useMemo(() => {
+    const materials: StudyMaterial[] = [];
+    const addMaterial = (material?: StudyMaterial | null) => {
+      if (!material?.url) return;
+      if (materials.some((item) => item.url === material.url)) return;
+      materials.push(material);
+    };
+
+    const weaknessFile =
+      data?.weakness?.file ??
+      (weaknessDetail?.fileUrl
+        ? {
+            title: weaknessDetail.fileName ?? weaknessDetail.title,
+            url: weaknessDetail.fileUrl,
+          }
+        : null);
+
+    if (weaknessFile) {
+      addMaterial({
+        id: 'weakness-file',
+        title: weaknessFile.title,
+        url: weaknessFile.url,
+        label: data?.weakness?.title ?? weaknessDetail?.title ?? '보완점',
+      });
+    }
+
+    if (data?.taskFile) {
+      addMaterial({
+        id: 'task-file',
+        title: data.taskFile.title,
+        url: data.taskFile.url,
+        label: 'Task File',
+      });
+    }
+
+    return materials;
+  }, [
+    data?.taskFile,
+    data?.weakness?.file,
+    data?.weakness?.title,
+    weaknessDetail?.fileUrl,
+    weaknessDetail?.fileName,
+    weaknessDetail?.title,
+  ]);
 
   useEffect(() => {
     resetUIState();

@@ -8,8 +8,8 @@ import { isRecord } from '@/shared/api/parse';
 const MIN_SAVE_DURATION = 1;
 
 export const useTaskTimer = (taskId: string) => {
-  const { activeTaskId, timerStartedAt, startTimer, stopTimer } = useTimerStore();
-  const { getTotalDurationByTaskId, addTaskLog } = usePlannerStore();
+  const { activeTaskId, timerStartedAt, startTimer, stopTimer, cancelTimer } = useTimerStore();
+  const { getTotalDurationByTaskId, addTaskLog, getTaskById } = usePlannerStore();
 
   const isRunning = activeTaskId === taskId;
   const savedTotalDuration = getTotalDurationByTaskId(taskId);
@@ -31,6 +31,12 @@ export const useTaskTimer = (taskId: string) => {
 
   const stopActiveTimer = useCallback(async () => {
     if (!activeTaskId || !timerStartedAt) return;
+
+    const activeTask = getTaskById(activeTaskId);
+    if (!activeTask) {
+      cancelTimer();
+      return;
+    }
 
     const startedAtMs = timerStartedAt;
     const sessionDuration = stopTimer();
@@ -63,7 +69,7 @@ export const useTaskTimer = (taskId: string) => {
     } catch (e) {
       console.error('[Timer] Failed to stop timer:', e);
     }
-  }, [activeTaskId, timerStartedAt, stopTimer, addTaskLog]);
+  }, [activeTaskId, timerStartedAt, stopTimer, addTaskLog, getTaskById, cancelTimer]);
 
   const toggle = useCallback(async () => {
     if (isRunning) {

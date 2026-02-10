@@ -1,4 +1,4 @@
-import { IconButton, HStack, Text } from '@chakra-ui/react';
+﻿import { IconButton, HStack, Text } from '@chakra-ui/react';
 import { useTaskTimer } from '../model/useTaskTimer';
 import { formatDuration } from '@/shared/lib/date';
 import { Subject, SUBJECT_COLORS } from '@/shared/constants/subjects';
@@ -22,10 +22,10 @@ export const TaskTimer = ({
   const isButtonDisabled = isDisabled || !isTimerEnabled;
 
   return (
-    <HStack spacing={2}>
+    <HStack spacing={2} alignItems={'center'}>
       <IconButton
         aria-label={isRunning ? 'Pause' : 'Start'}
-        size="xs"
+        size={{ base: 'xs', md: 'sm' }}
         borderRadius={'full'}
         isDisabled={isButtonDisabled}
         onClick={(e) => {
@@ -44,7 +44,11 @@ export const TaskTimer = ({
           bg: isRunning ? `${subjectColor}99` : `${subjectColor}60`,
         }}
         
-        icon={<span>{isRunning ? 'II' : '▶'}</span>}
+        icon={
+          <Text fontSize={{ base: 'xs', md: 'sm' }} fontWeight="bold" lineHeight="1">
+            {isRunning ? 'II' : '▶'}
+          </Text>
+        }
       />
       
       <Text 

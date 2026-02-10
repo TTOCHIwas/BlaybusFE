@@ -185,6 +185,8 @@ export const taskApi = {
       })(),
       taskDate: asString(pick(taskObj, ['taskDate', 'task_date', 'date']), 'TaskDetail.taskDate'),
       isMentorChecked: Boolean(pick(taskObj, ['isMentorChecked', 'is_mentor_checked'])),
+      menteeId: asOptionalString(pick(taskObj, ['menteeId', 'mentee_id']), 'TaskDetail.menteeId') ?? '',
+      weaknessId: asOptionalString(pick(taskObj, ['weaknessId', 'weakness_id']), 'TaskDetail.weaknessId') ?? null,
       description: asOptionalString(pick(taskObj, ['description', 'desc']), 'TaskDetail.description'),
       taskFile: taskFileRaw.url ? toFileData(taskFileRaw) : null,
       weakness,

@@ -41,7 +41,7 @@ apiClient.interceptors.response.use(
   (res: AxiosResponse) => unwrapResponse(res) as any,
   (err: AxiosError<unknown>) => {
     const status = err.response?.status;
-    if (status === 401 || status === 403) {
+    if (status === 401) {
       logoutAndClear();
     }
     const data = err.response?.data;

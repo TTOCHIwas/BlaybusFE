@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { User } from '@/entities/user/types';
+import { useTimerStore } from './timerStore';
 
 const clearLegacyToken = () => {
   try {
@@ -47,6 +48,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       login: (user, token) => {
         clearLegacyToken();
+        useTimerStore.getState().cancelTimer();
         set({ 
           user, 
           token, 
@@ -56,6 +58,7 @@ export const useAuthStore = create<AuthState>()(
       setUser: (user) => set({ user }),
       logout: () => {
         clearLegacyToken();
+        useTimerStore.getState().cancelTimer();
         set({ 
           user: null, 
           token: null, 

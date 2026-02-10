@@ -13,6 +13,14 @@ export const weaknessApi = {
     return list.map(mapWeaknessFromApi);
   },
 
+  listMine: async (): Promise<Weakness[]> => {
+    const data = await apiClient.get('/mentee/weakness/me');
+    const list = Array.isArray(data)
+      ? data
+      : asArray(pick(asRecord(data, 'WeaknessList'), ['content']), 'WeaknessList.content');
+    return list.map(mapWeaknessFromApi);
+  },
+
   create: async (payload: {
     menteeId: string;
     subject: Subject;
