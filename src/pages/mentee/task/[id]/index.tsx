@@ -1,7 +1,7 @@
-﻿import { useEffect, useMemo } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { Box, Button, Container, Flex, Text, VStack, Divider } from '@chakra-ui/react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { TaskDetailHeader } from '@/widgets/task-detail/TaskDetailHeader';
 import { ImageSlider } from '@/widgets/task-detail/ImageSlider';
@@ -16,9 +16,12 @@ const MenteeTaskDetailPage = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
 
-  const { loadFeedbacks, loadAnswers, resetUIState } = useTaskFeedbackStore();
+  const { loadFeedbacks, loadAnswers, resetUIState, setActiveFeedback } = useTaskFeedbackStore();
   const { data, isLoading } = useTaskDetail(taskId);
   const DEBUG_FEEDBACK = import.meta.env.DEV;
+  const [searchParams] = useSearchParams();
+  const focusFeedbackId = searchParams.get('feedbackId');
+  const [focusImageId, setFocusImageId] = useState<string | null>(null);
 
   const submissionImages = useMemo(() => {
     const images = data?.submission?.images ?? [];
@@ -109,6 +112,13 @@ const MenteeTaskDetailPage = () => {
         }
         loadFeedbacks(feedbacks);
         loadAnswers(answers);
+        if (focusFeedbackId) {
+          const target = feedbacks.find((fb) => fb.id === focusFeedbackId);
+          if (target) {
+            setFocusImageId(target.imageId);
+            setActiveFeedback(target.id);
+          }
+        }
       }
     };
 
@@ -126,6 +136,8 @@ const MenteeTaskDetailPage = () => {
     resetUIState,
     loadFeedbacks,
     loadAnswers,
+    focusFeedbackId,
+    setActiveFeedback,
   ]);
 
   const handleBackToList = () => navigate(-1);
@@ -159,6 +171,7 @@ const MenteeTaskDetailPage = () => {
                 taskId={data.id}
                 currentUserId={user.id}
                 userRole="MENTEE"
+                focusImageId={focusImageId}
               />
             </Box>
             <Box>
@@ -222,3 +235,4 @@ const MenteeTaskDetailPage = () => {
 };
 
 export default MenteeTaskDetailPage;
+

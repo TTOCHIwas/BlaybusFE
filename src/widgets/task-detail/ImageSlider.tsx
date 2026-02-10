@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Box, Flex, IconButton, Image, Text } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon, CloseIcon , ChatIcon} from '@chakra-ui/icons'; 
 import { motion, PanInfo } from 'framer-motion';
@@ -18,15 +18,32 @@ interface ImageSliderProps {
   currentUserId: string;
   userRole: UserRole;
   onDelete?: (imageId: string) => void;
+  focusImageId?: string | null;
 }
 
-export const ImageSlider = ({ images, taskId, currentUserId, userRole, onDelete }: ImageSliderProps) => {
+export const ImageSlider = ({ images, taskId, currentUserId, userRole, onDelete, focusImageId }: ImageSliderProps) => {
   const DEBUG_FEEDBACK = import.meta.env.DEV;
   const [currentIndex, setCurrentIndex] = useState(0);
   const store = useTaskFeedbackStore();
+  const lastAppliedFocusId = useRef<string | null>(null);
   
   const isSubmissionMode = !!onDelete;
   const isCreateMode = !isSubmissionMode && store.commentMode === 'create';
+
+  useEffect(() => {
+    if (!focusImageId) {
+      lastAppliedFocusId.current = null;
+      return;
+    }
+    if (lastAppliedFocusId.current === focusImageId) return;
+    const targetIndex = images.findIndex((img) => img.id === focusImageId);
+    if (targetIndex < 0) return;
+    if (DEBUG_FEEDBACK) {
+      console.debug('[feedback-slider] focus image', { focusImageId, targetIndex });
+    }
+    setCurrentIndex(targetIndex);
+    lastAppliedFocusId.current = focusImageId;
+  }, [focusImageId, images, DEBUG_FEEDBACK]);
 
   const safeIndex = images.length === 0 ? 0 : Math.min(currentIndex, images.length - 1);
 
