@@ -1,4 +1,4 @@
-import { Box, VStack, Flex, Text } from '@chakra-ui/react';
+﻿import { Box, VStack, Flex, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { FeedbackDateController } from './ui/FeedbackDateController';
 import { SubjectFilter, SubjectType } from './ui/SubjectFilter';
@@ -60,14 +60,15 @@ export const FeedbackListWidget = () => {
     const filteredList = (menteeId ? items : [])
         .filter((item) => selectedSubject === 'ALL' || item.subject === selectedSubject)
         .map((item) => ({
-            id: item.taskId || item.id,
+            feedbackId: item.id,
+            taskId: item.taskId,
             menteeName: item.menteeName || menteeName || '',
             title: item.taskTitle || item.content || '',
             date: (item.taskDate || item.createdAt || '').split('T')[0],
             subject: item.subject || 'KOREAN',
         }));
 
-const handleItemClick = (taskId: string) => {
+    const handleItemClick = (taskId: string) => {
         // Navigate to assignment detail page
         // Using current structure: /mentor/mentee/:menteeId/task/:taskId
         navigate(`/mentor/mentee/${menteeId}/task/${taskId}`);
@@ -95,16 +96,16 @@ const handleItemClick = (taskId: string) => {
                     {filteredList.length > 0 ? (
                         filteredList.map((item) => (
                             <FeedbackListItem
-                                key={item.id}
+                                key={item.feedbackId}
                                 menteeName={item.menteeName}
                                 title={item.title}
                                 date={item.date}
-                                onClick={() => handleItemClick(item.id)}
+                                onClick={() => item.taskId && handleItemClick(item.taskId)}
                             />
                         ))
                     ) : (
                         <Box py={10} textAlign="center">
-                            <Text color="gray.500">등록된 피드백이 없습니다.</Text>
+                            <Text color="gray.500">피드백이 없습니다.</Text>
                         </Box>
                     )}
                 </VStack>
@@ -112,3 +113,5 @@ const handleItemClick = (taskId: string) => {
         </Box>
     );
 };
+
+
