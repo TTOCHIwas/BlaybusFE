@@ -57,7 +57,23 @@ export const useFcmRegistration = (options?: UseFcmRegistrationOptions) => {
   useEffect(() => {
     if (options?.auto === false) return;
     if (!user) return;
-    void registerFcmToken({ askPermission: false });
+    let asked = false;
+    if (typeof window !== 'undefined') {
+      try {
+        const key = 'ask-notification-permission';
+        if (localStorage.getItem(key) === '1') {
+          localStorage.removeItem(key);
+          asked = true;
+          void registerFcmToken({ askPermission: true });
+        }
+      } catch {
+        // ignore storage errors
+      }
+    }
+
+    if (!asked) {
+      void registerFcmToken({ askPermission: false });
+    }
   }, [options?.auto, registerFcmToken, user]);
 
   return { registerFcmToken };

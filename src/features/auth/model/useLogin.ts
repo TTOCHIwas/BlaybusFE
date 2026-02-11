@@ -20,6 +20,11 @@ export const useLogin = () => {
       });
 
       setAuth(user, token); 
+      try {
+        localStorage.setItem('ask-notification-permission', '1');
+      } catch {
+        // ignore storage errors
+      }
 
       toast({ 
         title: '로그인 성공', 
