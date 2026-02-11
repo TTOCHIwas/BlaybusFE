@@ -54,11 +54,11 @@ export const CalendarLegend = ({
   return (
     <Flex 
       w="full"
-      justify={{ base: 'flex-start', md: 'space-between' }}
+      justify={'space-between' }
       align={{ base: 'flex-start', md: 'center' }}
       gap={{ base: 2, md: 4 }}
       mt={{ base: 4, md: 0 }}
-      direction={{ base: 'column', md: 'row' }}
+      direction={'row'}
       flexWrap="wrap"
     >
       <Wrap justify="flex-start" spacing={{ base: 3, md: 2 }}>
