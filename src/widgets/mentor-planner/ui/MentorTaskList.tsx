@@ -33,7 +33,6 @@ export const MentorTaskList = ({ tasks, logs, onHoverSubject }: Props) => {
       <Text
         fontSize="20px"
         fontWeight="700"
-        fontFamily="Pretendard"
         color="#373E56"
         mb={6}
       >

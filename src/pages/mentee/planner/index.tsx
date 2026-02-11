@@ -22,13 +22,13 @@ const MenteePlannerPage = () => {
     <Box w="100%" minH="100vh">
       <Container maxW="1200px" p={0}>
         
-        <Box boxShadow="sm" mt={-2} mb={6} overflow="hidden">
+        <Flex direction={"column"} mt={-2} mb={6} overflow="hidden">
           
           <Box p={{ base: 0, md: 6 }}>
             <CalendarWidget />
           </Box>
 
-          <Flex direction={{ base: 'column', md: 'row' }} justify="center" pt={{base:6, md:'none'}} p={{ base: 'none', md: 6 }} gap={{ base: 8, md: 4 }}>
+          <Flex bg={{base:"none", md:"#F9F9FB"}} borderRadius={22} direction={{ base: 'column', md: 'row' }} justify="center" pt={{base:6, md:'none'}} p={{ base: 'none', md: 6 }} gap={{ base: 8, md: 0 }}>
             <Box flex={1} w="full" minW={0} p={4}>
               <HStack align="baseline" spacing={2} mb={4}>
                 <Text fontSize="xl" fontWeight="semibold" p={1}>오늘 할 일</Text>
@@ -43,12 +43,12 @@ const MenteePlannerPage = () => {
             </Box>
           </Flex>
           
-          <Box p={{ base: 4, md: 6 }} borderTop="1px solid" borderColor="gray.100">
+          <Box p={{ base: 1, md: 0 }} pt={{base:10, md:12}}>
             <DailyMemoWidget />
           </Box>
-        </Box>
+        </Flex>
 
-        <Box p={{ base: 4, md: 6 }}>
+        <Box p={{ base: 1, md: 0 }} pt={{base:0, md:4}} pb={20}>
           <MentorFeedbackWidget />
         </Box>
 

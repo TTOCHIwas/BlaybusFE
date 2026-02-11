@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
 import { Box, Flex, Text, VStack, IconButton, HStack, Spinner } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon, AddIcon } from '@chakra-ui/icons';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -71,7 +71,7 @@ export const ZoomFeedbackList = ({ menteeId: propMenteeId, onItemClick }: ZoomFe
   return (
     <Box bg={{ base: 'none', md: 'white' }}>
       <Flex justify="space-between" align="center" mb={6}>
-        <Text fontSize={{ base: 'md', md: 'xl' }} fontWeight="bold">
+        <Text fontSize={{ base: 'xl', md: 'xl' }} fontWeight="bold">
           줌 피드백 목록
         </Text>
         <HStack spacing={2}>

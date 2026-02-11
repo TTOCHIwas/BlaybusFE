@@ -18,8 +18,7 @@ export const DailyMemoWidget = () => {
 
   return (
     <Box 
-      px={4} 
-      py={3} 
+      px={{base:4, md:0}} 
     >
       <Flex align="center" mb={2} gap={2}>
         <Text 
@@ -39,7 +38,7 @@ export const DailyMemoWidget = () => {
           borderRadius={10}
           boxShadow="sm"
           p={6}
-          bg="white"
+          bg={{base:"white", md:"#F9F9FB"}}
           size="sm"
           resize="none"
           rows={2}
@@ -50,7 +49,7 @@ export const DailyMemoWidget = () => {
       ) : (
         <Box 
           p={2} 
-          bg="white" 
+          bg={{base:"white", md:"#F9F9FB"}}
           minH="40px"
         >
           <Text fontSize="sm" color={memoValue ? "gray.700" : "gray.400"}>

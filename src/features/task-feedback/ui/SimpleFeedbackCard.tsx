@@ -16,7 +16,7 @@ export const SimpleFeedbackCard = ({ feedback }: Props) => {
 
   return (
     <Box 
-      bg="white" 
+      bg={{base:"white", md:"#F9F9FB"}}
       p={5} 
       borderRadius="10" 
       boxShadow="sm" 

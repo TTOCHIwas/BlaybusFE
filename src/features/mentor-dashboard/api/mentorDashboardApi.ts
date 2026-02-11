@@ -1,7 +1,10 @@
-import { menteeDashboardApi } from '@/features/mentee-dashboard/api/menteeDashboardApi';
+﻿import { menteeDashboardApi } from '@/features/mentee-dashboard/api/menteeDashboardApi';
 import { mentoringApi } from '@/features/mentoring/api/mentoringApi';
 import { notificationApi } from '@/features/notification/api/notificationApi';
+import { taskApi } from '@/features/task/api/taskApi';
+import { feedbackApi } from '@/features/task-feedback/api/feedbackApi';
 import type { Notification } from '@/entities/notification/types';
+import type { Answer } from '@/entities/answer/types';
 import type {
   DashboardStats,
   MenteeSummary,
@@ -60,7 +63,7 @@ const toFallbackSummary = (mentee: { id: string; name: string }): MenteeSummary 
 const extractAuthorName = (message: string): string | undefined => {
   const trimmed = message.trim();
   if (!trimmed) return undefined;
-  const match = trimmed.match(/^(.+?)\s*(멘티|멘토)?님?이/);
+  const match = trimmed.match(/^(.+?)\s*(멘티|멘토)/);
   return match ? match[1].trim() : undefined;
 };
 
@@ -93,6 +96,75 @@ const toRecentSubmittedTask = (item: Notification): RecentSubmittedTask | null =
   };
 };
 
+const enrichRecentTasksWithSubject = async (
+  tasks: RecentSubmittedTask[]
+): Promise<RecentSubmittedTask[]> => {
+  if (tasks.length === 0) return tasks;
+  const uniqueIds = Array.from(new Set(tasks.map((task) => task.id)));
+  const results = await Promise.allSettled(
+    uniqueIds.map((taskId) => taskApi.getTaskDetail(taskId))
+  );
+  const detailById = new Map<string, { subject?: string; title?: string }>();
+  results.forEach((result, index) => {
+    if (result.status === 'fulfilled') {
+      const subject = result.value.subject;
+      const title = result.value.title;
+      detailById.set(uniqueIds[index], { subject, title });
+    }
+  });
+  return tasks.map((task) => {
+    const detail = detailById.get(task.id);
+    if (!detail) return task;
+    return {
+      ...task,
+      subject: detail.subject ?? task.subject,
+      title: detail.title ?? task.title,
+    };
+  });
+};
+
+const getLatestAnswer = (answers: Answer[]): Answer | undefined => {
+  if (!answers.length) return undefined;
+  return answers.reduce<Answer | undefined>((latest, current) => {
+    if (!latest) return current;
+    const latestTime = new Date(latest.createdAt).getTime();
+    const currentTime = new Date(current.createdAt).getTime();
+    return currentTime > latestTime ? current : latest;
+  }, undefined);
+};
+
+const enrichRecentCommentsWithContent = async (
+  comments: RecentFeedbackComment[]
+): Promise<RecentFeedbackComment[]> => {
+  if (comments.length === 0) return comments;
+  const uniqueFeedbackIds = Array.from(
+    new Set(comments.map((comment) => comment.feedbackId).filter(Boolean))
+  );
+  if (uniqueFeedbackIds.length === 0) return comments;
+
+  const results = await Promise.allSettled(
+    uniqueFeedbackIds.map((feedbackId) => feedbackApi.getComments(feedbackId))
+  );
+
+  const latestByFeedbackId = new Map<string, Answer>();
+  results.forEach((result, index) => {
+    if (result.status !== 'fulfilled') return;
+    const latest = getLatestAnswer(result.value);
+    if (latest) latestByFeedbackId.set(uniqueFeedbackIds[index], latest);
+  });
+
+  return comments.map((comment) => {
+    const latest = latestByFeedbackId.get(comment.feedbackId);
+    if (!latest) return comment;
+    return {
+      ...comment,
+      content: latest.comment ?? comment.content,
+      menteeName: latest.authorName ?? comment.menteeName,
+      createdAt: latest.createdAt ?? comment.createdAt,
+    };
+  });
+};
+
 const toRecentComment = (item: Notification): RecentFeedbackComment | null => {
   const taskId = item.taskId;
   const feedbackId = item.feedbackId || item.targetId;
@@ -101,7 +173,7 @@ const toRecentComment = (item: Notification): RecentFeedbackComment | null => {
   const message = item.message ?? '';
   return {
     id: item.id,
-    content: message || '댓글 알림',
+    content: message || '알림 내용',
     menteeId,
     menteeName: extractAuthorName(message) ?? '멘티',
     taskId,
@@ -155,6 +227,9 @@ export const mentorDashboardApi = {
       .filter((item): item is RecentFeedbackComment => Boolean(item))
       .slice(0, RECENT_LIMIT);
 
+    const enrichedRecentTasks = await enrichRecentTasksWithSubject(recentTasks);
+    const enrichedRecentComments = await enrichRecentCommentsWithContent(recentComments);
+
     return {
       stats: DEFAULT_STATS,
       mentees: results.map((result, index) => {
@@ -164,8 +239,14 @@ export const mentorDashboardApi = {
         }
         return toFallbackSummary(mentee);
       }),
-      recentTasks,
-      recentComments,
+      recentTasks: enrichedRecentTasks,
+      recentComments: enrichedRecentComments,
     };
   },
 };
+
+
+
+
+
+

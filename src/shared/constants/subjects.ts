@@ -1,4 +1,4 @@
-export type Subject = 'KOREAN' | 'ENGLISH' | 'MATH' | 'OTHER';
+﻿export type Subject = 'KOREAN' | 'ENGLISH' | 'MATH' | 'OTHER';
 
 export const SUBJECT_LABELS: Record<Subject, string> = {
   KOREAN: '국어',

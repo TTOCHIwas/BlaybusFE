@@ -30,7 +30,7 @@ export const MentorFeedbackCard = ({ feedback, onSave }: Props) => {
 
   return (
     <Box
-      bg="white"
+      bg={{base:"none",md:"white"}}
       borderRadius="22px"
       position="relative"
     >
@@ -61,7 +61,7 @@ export const MentorFeedbackCard = ({ feedback, onSave }: Props) => {
             placeholder="오늘 하루에 대한 피드백을 남겨주세요."
             borderRadius="22px"
             minH={'8.3125rem'}
-            bg="#F9F9FB"
+            bg={{base:"white",md:"#F9F9FB"}}
             p={4}
             resize="none"
             mb={4}
@@ -89,7 +89,7 @@ export const MentorFeedbackCard = ({ feedback, onSave }: Props) => {
         </Box>
       ) : (
         <Box
-          bg="#F9F9FB"
+          bg={{base:"white",md:"#F9F9FB"}}
           p="32px 34px"
           borderRadius="22px"
           cursor="pointer"

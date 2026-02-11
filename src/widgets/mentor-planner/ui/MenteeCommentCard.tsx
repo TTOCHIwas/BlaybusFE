@@ -7,7 +7,7 @@ interface Props {
 export const MenteeCommentCard = ({ memo }: Props) => {
   return (
     <Box
-      bg="white"
+      bg={{base:"none",md:"white"}}
       borderRadius="22px"
     >
       <Flex align="center" mb={4} gap={3}>
@@ -17,7 +17,7 @@ export const MenteeCommentCard = ({ memo }: Props) => {
       </Flex>
 
       <Box
-        bg="#F9F9FB"
+        bg={{base:"white",md:"#F9F9FB"}}
         p="32px 34px"
         borderRadius="22px"
       >

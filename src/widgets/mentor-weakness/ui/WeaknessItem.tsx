@@ -64,7 +64,7 @@ export const WeaknessItem = ({
 
   return (
     <Box
-      bg="#F9F9FB"
+      bg={{base:'white',md:"#F9F9FB"}}
       p="24px 32px"
       borderRadius="22px"
       position="relative"
@@ -74,7 +74,6 @@ export const WeaknessItem = ({
       _hover={{ bg: isEditing ? 'white' : 'gray.100' }}
     >
       <Flex align="flex-start" gap={3} justifyContent="center" alignItems="center">
-        <Box w="8px" h="8px" mb={0.5} borderRadius="full" bg="#FF9AFE" />
 
         <Box flex={1}>
           {isEditing ? (
