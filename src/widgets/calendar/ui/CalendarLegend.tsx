@@ -61,7 +61,7 @@ export const CalendarLegend = ({
       direction={{ base: 'column', md: 'row' }}
       flexWrap="wrap"
     >
-      <Wrap justify="flex-start" spacing={{ base: 3, md: 2 }} w="full">
+      <Wrap justify="flex-start" spacing={{ base: 3, md: 2 }}>
         <WrapItem>
           <ResponsiveSubjectTag label="국어" shortLabel="국" color="#53A8FE" />
         </WrapItem>

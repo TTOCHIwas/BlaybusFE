@@ -1,26 +1,13 @@
 ﻿import { Box, Text, VStack, Badge, Flex, Avatar, Icon } from '@chakra-ui/react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import { CommentAvartarIcon } from '@/shared/ui/icons';
+import { SUBJECT_COLORS, SUBJECT_LABELS } from '@/shared/constants/subjects';
 import { RecentSubmittedTask } from '../../../pages/mentor/mypage/model/types';
 import { useNavigate } from 'react-router-dom';
 
 interface Props {
   tasks: RecentSubmittedTask[];
 }
-
-const SUBJECT_COLOR: Record<string, string> = {
-  KOREAN: 'blue',
-  MATH: 'purple',
-  ENGLISH: 'green',
-  OTHER: 'gray',
-};
-
-const SUBJECT_LABEL: Record<string, string> = {
-  KOREAN: '국어',
-  MATH: '수학',
-  ENGLISH: '영어',
-  OTHER: '기타',
-};
 
 export const RecentTaskList = ({ tasks }: Props) => {
   const navigate = useNavigate();
@@ -72,7 +59,8 @@ export const RecentTaskList = ({ tasks }: Props) => {
 
             <Flex align="center" ml={2}>
               <Badge
-                colorScheme={SUBJECT_COLOR[task.subject] || 'gray'}
+                bg={SUBJECT_COLORS[task.subject as keyof typeof SUBJECT_COLORS] || SUBJECT_COLORS.OTHER}
+                color="white"
                 variant="solid"
                 borderRadius="full"
                 px={4}
@@ -80,7 +68,7 @@ export const RecentTaskList = ({ tasks }: Props) => {
                 fontSize="sm"
                 fontWeight="bold"
               >
-                {SUBJECT_LABEL[task.subject] || task.subject}
+                {SUBJECT_LABELS[task.subject as keyof typeof SUBJECT_LABELS] || task.subject}
               </Badge>
               <Icon as={ChevronRightIcon} color="gray.400" w={6} h={6} ml={3} />
             </Flex>
@@ -96,3 +84,4 @@ export const RecentTaskList = ({ tasks }: Props) => {
     </Box>
   );
 };
+

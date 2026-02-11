@@ -94,7 +94,7 @@ export const MentorPlannerSection = ({ menteeName }: Props) => {
                     direction={{ base: 'column', md: 'row' }}
                     mb={10}
                     bg="#F9F9FB"
-                    p="32px 34px"
+                    p={{base:"0 0",md:"32px 34px"}}
                     borderRadius="22px"
                 >
                     <Box
@@ -113,7 +113,7 @@ export const MentorPlannerSection = ({ menteeName }: Props) => {
                         flexShrink={0}
                         mx={{ base: 'auto', md: 0 }}
                         w={{ base: '100%', md: '24vw' }}
-                        maxW={"450px"}
+                        maxW={{base:"none",md:"450px"}}
                         overflowX={{ base: 'auto', md: 'visible' }}
                         display="flex"
                         justifyContent="center"

@@ -34,7 +34,7 @@ export const StudyTimeChart = () => {
   }, [activeTaskId, timerStartedAt, savedSeconds]);
 
   return (
-    <Box p={4} borderRadius="lg" boxShadow="sm">
+    <Box px={{base:4, md:0}} borderRadius="lg" boxShadow="sm">
       <Flex mx={2} direction={{base:"column", lg:"row"}} gap={{base:1, md:'none'}} align={{base:"flex-start"}} justify="space-between" mb={4}>
         <Flex align="center" gap={2}>
           <Heading size="md" whiteSpace={'nowrap'} color={"#373E56"}>공부시간 기록</Heading>

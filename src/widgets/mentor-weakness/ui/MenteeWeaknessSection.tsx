@@ -136,7 +136,7 @@ export const MenteeWeaknessSection = () => {
   };
 
   return (
-    <Box bg="white" borderRadius="22px">
+    <Box bg={{base:'none',md:"white"}} borderRadius="22px">
       <Flex
         direction="column"
         align="flex-start"
@@ -181,7 +181,7 @@ export const MenteeWeaknessSection = () => {
         </HStack>
       </Flex>
 
-      <VStack spacing={3} align="stretch">
+      <VStack spacing={3} align="stretch" >
         {filteredList.length === 0 && !isAdding && (
           <Flex
             h="120px"

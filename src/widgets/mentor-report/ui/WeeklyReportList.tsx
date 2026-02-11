@@ -3,8 +3,17 @@ import { Box, Flex, Text, VStack, HStack, Menu, MenuButton, MenuList, MenuItem, 
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-  format, startOfMonth, endOfMonth, startOfWeek, endOfWeek,
-  eachWeekOfInterval, addDays, isSameMonth
+  format,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  eachWeekOfInterval,
+  addDays,
+  isSameMonth,
+  isWithinInterval,
+  parseISO,
+  isValid,
 } from 'date-fns';
 import { WeeklyReportItem } from './WeeklyReportItem';
 import { weeklyReportApi } from '@/features/report/api/weeklyReportApi';
@@ -28,13 +37,17 @@ export const WeeklyReportList = ({ externalDate, onItemClick }: WeeklyReportList
   const currentMonthDate = externalDate ?? internalDate;
   const isControlled = !!externalDate; 
 
-  const queryMenteeId = user?.role === 'MENTOR' ? menteeId : user?.id;
+  const queryMenteeId = user?.role === 'MENTOR' ? menteeId : undefined;
   const isMentor = user?.role === 'MENTOR';
 
   useEffect(() => {
     const run = async () => {
       setIsLoading(true);
       try {
+        if (isMentor && !queryMenteeId) {
+          setReports([]);
+          return;
+        }
         const year = currentMonthDate.getFullYear();
         const month = currentMonthDate.getMonth() + 1;
         const list = await weeklyReportApi.list({ year, month, menteeId: queryMenteeId });
@@ -45,10 +58,6 @@ export const WeeklyReportList = ({ externalDate, onItemClick }: WeeklyReportList
     };
     run();
   }, [currentMonthDate, queryMenteeId]);
-
-  const reportByStartDate = useMemo(() => {
-    return new Map(reports.map(r => [r.startDate, r]));
-  }, [reports]);
 
   const weeksInMonth = useMemo(() => {
     const monthStart = startOfMonth(currentMonthDate);
@@ -76,6 +85,22 @@ export const WeeklyReportList = ({ externalDate, onItemClick }: WeeklyReportList
     });
   }, [currentMonthDate]);
 
+  const reportByWeekStart = useMemo(() => {
+    const map = new Map<string, ReportData | undefined>();
+    weeksInMonth.forEach((week) => {
+      const weekStart = parseISO(week.startDate);
+      const weekEnd = parseISO(week.endDate);
+      const report = reports.find((r) => {
+        if (!r.startDate) return false;
+        const reportStart = parseISO(r.startDate);
+        if (!isValid(reportStart)) return false;
+        return isWithinInterval(reportStart, { start: weekStart, end: weekEnd });
+      });
+      map.set(week.startDate, report);
+    });
+    return map;
+  }, [weeksInMonth, reports]);
+
   const getWeekStatus = (startDateStr: string, endDateStr: string) => {
     const todayStr = format(new Date(), 'yyyy-MM-dd');
     if (todayStr < startDateStr) return 'FUTURE';
@@ -84,7 +109,7 @@ export const WeeklyReportList = ({ externalDate, onItemClick }: WeeklyReportList
   };
 
   const handleClick = (startDate: string, endDate: string) => {
-    const report = reportByStartDate.get(startDate);
+    const report = reportByWeekStart.get(startDate);
 
     if (onItemClick) {
         onItemClick({ startDate, endDate, reportId: report?.id });
@@ -101,9 +126,9 @@ export const WeeklyReportList = ({ externalDate, onItemClick }: WeeklyReportList
   const displayMonth = Number(format(currentMonthDate, 'M'));
 
   return (
-    <Box px={4} mb={20}>
+    <Box px={{base:0,md:4}} mb={20}>
       <Flex justify="space-between" align="center" mb={{base:1, md:6}}>
-        <Text my={2} fontSize={{base:"1rem", md:"2xl"}} fontWeight="bold">주간 학습 리포트</Text>
+        <Text my={2} fontSize={{base:"xl", md:"2xl"}} fontWeight="bold">주간 학습 리포트</Text>
         
         {!isControlled && (
           <HStack spacing={2}>
@@ -212,7 +237,7 @@ export const WeeklyReportList = ({ externalDate, onItemClick }: WeeklyReportList
         ) : (
           weeksInMonth.map((week) => {
             const status = getWeekStatus(week.startDate, week.endDate);
-            const report = reportByStartDate.get(week.startDate);
+            const report = reportByWeekStart.get(week.startDate);
             const hasReport = !!report;
 
             return (

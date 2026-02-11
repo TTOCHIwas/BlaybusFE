@@ -55,8 +55,8 @@ export const DesktopSidebar = ({ isCollapsed, onToggleSidebar }: Props) => {
       w={isCollapsed ? '80px' : '280px'}
       h="100vh"
       bg="white"
-      borderRight="6px solid #F7F7F7"
       position="fixed"
+      shadow={'sm'}
       top={0}
       left={0}
       zIndex="1100"

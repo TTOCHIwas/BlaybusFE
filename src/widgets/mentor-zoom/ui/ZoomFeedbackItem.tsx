@@ -47,14 +47,14 @@ export const ZoomFeedbackItem = ({
       }}
     >
       <Text
-        fontSize={{base:"0.875rem", md:"1.25rem"}}
+        fontSize={{base:"0.875rem"}}
         fontWeight="600"
         color="gray.800"
       >
         {getOrdinal(countNumber)}
       </Text>
 
-      <Text fontSize={{base:"0.875rem", md:"1.25rem"}} color="gray.500" fontWeight="500">
+      <Text fontSize={{base:"0.875rem"}} color="gray.500" fontWeight="500">
         {format(date, 'yy.MM.dd', { locale: ko })}
       </Text>
       <Icon

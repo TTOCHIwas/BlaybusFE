@@ -51,8 +51,7 @@ export const TaskAddForm = ({ onSubmit }: TaskAddFormProps) => {
             py={4}
             variant="outline"
             borderRadius="xl"
-            borderColor="blue.400"
-            borderWidth="2px"
+            borderWidth={1}
             bg="white"
             fontWeight="normal"
             fontSize="sm"

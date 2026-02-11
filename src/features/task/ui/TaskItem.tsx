@@ -70,19 +70,6 @@ export const TaskItem = ({
       </VStack>
 
       <HStack spacing={2} flexShrink={0}>
-        {/* {canDelete && (
-          <IconButton
-            aria-label="Delete task"
-            icon={<CloseIcon />}
-            size="xs"
-            variant="ghost"
-            colorScheme="red"
-            onClick={(e) => {
-              e.stopPropagation(); 
-              onDelete();
-            }}
-          />
-        )} */}
         <HStack spacing={6} flex={1}>
           <Badge 
             bg={subjectColor} 
