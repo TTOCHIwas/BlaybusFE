@@ -128,7 +128,7 @@ export const WeeklyReportList = ({ externalDate, onItemClick }: WeeklyReportList
   return (
     <Box px={{base:0,md:4}} mb={20}>
       <Flex justify="space-between" align="center" mb={{base:1, md:6}}>
-        <Text my={2} fontSize={{base:"xl", md:"2xl"}} fontWeight="bold">주간 학습 리포트</Text>
+        <Text my={2} fontSize={{base:"lg", md:"xl"}} fontWeight="bold">주간 학습 리포트</Text>
         
         {!isControlled && (
           <HStack spacing={2}>
