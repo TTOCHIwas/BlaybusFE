@@ -28,6 +28,7 @@ export const TaskTimer = ({
         size={{ base: 'xs', md: 'sm' }}
         boxSize={{ base: '28px', md: '32px' }}
         minW={{ base: '28px', md: '32px' }}
+        minH={{ base: '28px', md: '32px' }}
         p={0}
         borderRadius={'full'}
         isDisabled={isButtonDisabled}
